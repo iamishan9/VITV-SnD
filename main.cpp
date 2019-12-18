@@ -1,6 +1,8 @@
 #pragma once
-#include "glutWindow.h"
 #include <vector>
+
+#include "glutWindow.h"
+#include "src/Vector2.h"
 
 class MainWindow: public GlutWindow {
 public:
@@ -47,7 +49,10 @@ void MainWindow::onMouseMove(double x, double y) {}
 
 void MainWindow::onQuit() {}
 
-int main(int argc,char **argv) {
+int main(int argc, char **argv) {
+
+    Vector2* myVector = new Vector2(1, 2);
+
     MainWindow win("Drones", argc, argv);
     win.start();
     return 0;
