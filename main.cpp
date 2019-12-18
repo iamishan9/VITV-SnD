@@ -104,7 +104,6 @@ void MainWindow::onUpdate(double dt) {
     }
 }
 
-
 #define MB_LEFTCLICK 0
 #define MB_RIGHTCLICK 2
 void MainWindow::onMouseDown(int button, double x, double y) {

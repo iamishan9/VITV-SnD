@@ -32,7 +32,7 @@ void Drone::onUpdate(Vector2 avoidForce) {
     // Updates the velocity
     velocity = velocity + acceleration;
 
-    // Moves the drone in it's direction
+    // Moves the drone in its direction
     position = position - velocity;
 
     velocity = velocity * dampering;
