@@ -1,0 +1,3 @@
+C:/Users/tomde/Desktop/Master/cpp/VITV-SnD/cmake-build-debug/CMakeFiles/VITV-SnD.dir
+C:/Users/tomde/Desktop/Master/cpp/VITV-SnD/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomde/Desktop/Master/cpp/VITV-SnD/cmake-build-debug/CMakeFiles/rebuild_cache.dir
