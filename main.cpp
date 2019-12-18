@@ -9,6 +9,8 @@
 class MainWindow: public GlutWindow {
 public:
 
+    int maxServers = 12;
+
     vector<Drone*> drones;
     vector<Server*> servers;
 
@@ -93,6 +95,21 @@ void MainWindow::onStart() {
 }
 
 void MainWindow::onDraw() {
+
+    glColor3f(1, .5,.5);
+    for (Drone* drone : drones) {
+        if (drone->server) {
+            glPushMatrix();
+            line(
+                    drone->position.x,
+                    drone->position.y,
+                    drone->server->position.x,
+                    drone->server->position.y
+            );
+            glPopMatrix();
+        }
+    }
+
     Server* hoveredServer = selectedServer;
     if (!hoveredServer) {
         for (Server* server : servers) {
@@ -148,8 +165,25 @@ void MainWindow::onUpdate(double dt) {
     }
     drones = tmp;
 
-    // Update the drones positions
-    for (Drone* drone : drones) { drone->onUpdate(avoidingForceForDrone(drone)); }
+    float min;
+    float current;
+    Server* closest;
+    for (Drone* drone : drones) {
+
+        // Update the drones positions
+        drone->onUpdate(avoidingForceForDrone(drone));
+
+        min = (float) INT_MAX;
+        closest = nullptr;
+        for (Server* server : servers) {
+            current = drone->position.magnitude(server->position);
+            if (current < min) {
+                min = current;
+                closest = server;
+            }
+        }
+        drone->server = closest;
+    }
 
     // Compute the collisions
     Drone* droneA;
@@ -173,7 +207,9 @@ void MainWindow::onMouseDown(int button, double x, double y) {
 
     }
     if (button == MB_RIGHTCLICK) {
-        servers.push_back(new Server(Vector2(x, y), "Demo", serverId));
+        if (servers.size() < maxServers) {
+            servers.push_back(new Server(clampToScreenDimensions(mousePos), "Demo", serverId));
+        }
     }
 }
 

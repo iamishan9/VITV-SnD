@@ -6,6 +6,7 @@
 
 #include "../glutWindow.h"
 #include "Vector2.h"
+#include "Server.h"
 
 class Drone {
 public:
@@ -21,6 +22,8 @@ public:
     Vector2 target;
     Vector2 velocity     = Vector2();
     Vector2 acceleration = Vector2();
+
+    Server* server;
 
     /*
      * Creates a drone at pos
