@@ -1,3 +1,7 @@
+cmake-build-debug/
+
+# C++ gitignore template
+
 # Prerequisites
 *.d
 
