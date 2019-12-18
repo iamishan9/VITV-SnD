@@ -64,7 +64,7 @@ public:
      * Prevents the user from placing a server outside the screen boundaries
      */
     Vector2 clampToScreenDimensions(Vector2 v) {
-        if (v.y > 10000) v.y = -padding;
+        if (v.y > 10000) v.y = -1;
         float x = v.x;
         float y = v.y;
         if (x < (padding)) x = padding;
@@ -94,11 +94,9 @@ void MainWindow::onStart() {
 }
 
 void MainWindow::onDraw() {
-
     Server* hoveredServer = selectedServer;
     if (!hoveredServer) {
         for (Server* server : servers) {
-
             if (mousePos.magnitude(server->position) < (server->size + 10)) {
                 hoveredServer = server;
             }
@@ -207,14 +205,29 @@ void MainWindow::onMouseDrag(double x, double y) {
 }
 
 #define KB_DEL 127
+#define KB_BACKSPACE 8
 void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
     switch(c) {
         case 'd':
             drones.push_back(new Drone(Vector2(10, 10), droneId));
             break;
 
-        case KB_DEL:
-
+            case KB_DEL: case KB_BACKSPACE:
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    // TODO: Eventually do this better
+                    vector<Server*> tmp;
+                    for (Server* mserver : servers) {
+                        if (mserver != server) {
+                            tmp.push_back(mserver);
+                        } else {
+                            cout << "Removing server" << endl;
+                        }
+                    }
+                    servers = tmp;
+                    break;
+                }
+            }
             break;
 
         default:
