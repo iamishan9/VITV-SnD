@@ -24,7 +24,6 @@ public:
             GlutWindow(argc, argv, title, windowX, windowY, FIXED) {
     };
 
-    bool MB_DOWN = false;
     Server* selectedServer = nullptr;
 
     void onStart() override;
@@ -43,7 +42,7 @@ public:
 
     /*
      * Computes the force that should be applied in order
-     * to avoid all drones in the avoidDroneRange
+     * to avoid all drones in the avoidDronesRange
      */
     Vector2 avoidingForceForDrone(Drone* d) {
         Vector2 avg = Vector2();
@@ -58,7 +57,7 @@ public:
         return avg;
     }
 
-    float padding = 15;
+    float padding = 25;
 
     /*
      * Prevents the user from placing a server outside the screen boundaries
