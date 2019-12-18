@@ -18,6 +18,8 @@ public:
     const static unsigned int windowX = 800;
     const static unsigned int windowY = 600;
 
+    Vector2 mousePos = Vector2();
+
     MainWindow(const string &title, int argc, char **argv):
             GlutWindow(argc, argv, title, windowX, windowY, FIXED) {
     };
@@ -60,9 +62,9 @@ public:
 
     /*
      * Prevents the user from placing a server outside the screen boundaries
-     * TODO: Fix server teleporting at the top of the window when it's dragged below the window
      */
     Vector2 clampToScreenDimensions(Vector2 v) {
+        if (v.y > 10000) v.y = -padding;
         float x = v.x;
         float y = v.y;
         if (x < (padding)) x = padding;
@@ -93,14 +95,23 @@ void MainWindow::onStart() {
 
 void MainWindow::onDraw() {
 
-    if (selectedServer) {
+    Server* hoveredServer = selectedServer;
+    if (!hoveredServer) {
+        for (Server* server : servers) {
+
+            if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                hoveredServer = server;
+            }
+        }
+    }
+    if (hoveredServer) {
         glColor3f(.75, .75,.95);
         glPushMatrix();
         fillEllipse(
-                selectedServer->position.x,
-                selectedServer->position.y - 10,
-                selectedServer->size + 10,
-                selectedServer->size + 10,
+                hoveredServer->position.x,
+                hoveredServer->position.y - 10,
+                hoveredServer->size + 10,
+                hoveredServer->size + 10,
                 60
         );
         glPopMatrix();
@@ -165,7 +176,7 @@ void MainWindow::onMouseDown(int button, double x, double y) {
 
     }
     if (button == MB_RIGHTCLICK) {
-        drones.push_back(new Drone(Vector2(10, 10), droneId));
+        servers.push_back(new Server(Vector2(x, y), "Demo", serverId));
     }
 }
 
@@ -174,17 +185,14 @@ void MainWindow::onMouseUp(int button, double x, double y) {
 }
 
 void MainWindow::onMouseMove(double x, double y) {
+    mousePos = Vector2(x, y);
     for (Drone* drone : drones) {
-        drone->target = Vector2(x, y);
-    }
-    if (MB_DOWN && selectedServer) {
-        selectedServer->position = Vector2(x, y);
+        drone->target = mousePos;
     }
 }
 
 void MainWindow::onMouseDrag(double x, double y) {
     onMouseMove(x, y);
-    Vector2 mousePos = Vector2(x, y);
     if (!selectedServer) {
         for (Server* server : servers) {
             if (mousePos.magnitude(server->position) < (server->size + 10)) {
@@ -198,9 +206,14 @@ void MainWindow::onMouseDrag(double x, double y) {
     }
 }
 
+#define KB_DEL 127
 void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
     switch(c) {
         case 'd':
+            drones.push_back(new Drone(Vector2(10, 10), droneId));
+            break;
+
+        case KB_DEL:
 
             break;
 
