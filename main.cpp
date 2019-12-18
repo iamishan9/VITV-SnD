@@ -15,8 +15,11 @@ public:
     GLuint droneId  = 0;
     GLuint serverId = 0;
 
+    const static unsigned int windowX = 800;
+    const static unsigned int windowY = 600;
+
     MainWindow(const string &title, int argc, char **argv):
-            GlutWindow(argc, argv, title,1000,500,FIXED) {
+            GlutWindow(argc, argv, title, windowX, windowY, FIXED) {
     };
 
     bool MB_DOWN = false;
@@ -29,6 +32,8 @@ public:
     void onMouseUp(int button, double x, double y) override;
     void onMouseDrag(double x, double y) override;
     void onMouseMove(double x, double y) override;
+    void onKeyPressed(unsigned char c, double x, double y) override;
+    void onReshape(int x, int y) override;
     void onUpdate(double dt) override;
 
     float avoidDronesRange = 125;
@@ -49,6 +54,22 @@ public:
             }
         }
         return avg;
+    }
+
+    float padding = 15;
+
+    /*
+     * Prevents the user from placing a server outside the screen boundaries
+     * TODO: Fix server teleporting at the top of the window when it's dragged below the window
+     */
+    Vector2 clampToScreenDimensions(Vector2 v) {
+        float x = v.x;
+        float y = v.y;
+        if (x < (padding)) x = padding;
+        if (x > (windowX - padding)) x = (windowX - padding);
+        if (y < (padding)) y = padding;
+        if (y > (windowY - padding)) y = (windowY - padding);
+        return {x, y};
     }
 };
 
@@ -173,8 +194,25 @@ void MainWindow::onMouseDrag(double x, double y) {
         }
     }
     if (selectedServer) {
-        selectedServer->position = mousePos;
+        selectedServer->position = clampToScreenDimensions(mousePos);
     }
+}
+
+void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
+    switch(c) {
+        case 'd':
+
+            break;
+
+        default:
+            break;
+    }
+    glutPostRedisplay();
+}
+
+void MainWindow::onReshape(int x, int y) {
+    // Locks screen dimensions
+    glutReshapeWindow( windowX, windowY);
 }
 
 void MainWindow::onQuit() {}
