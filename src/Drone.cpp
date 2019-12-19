@@ -9,6 +9,7 @@ Drone::Drone(Vector2 pos, GLuint textureId) {
     position = pos;
     target = pos;
     id = textureId;
+    server = nullptr;
 }
 
 void Drone::didCollide() {
