@@ -4,7 +4,7 @@
 #include "Server.h"
 #include <utility>
 
-Server::Server(Vector2 pos, string label, GLuint textureId) {
+Server::Server(Vector2D pos, string label, GLuint textureId) {
     position = pos;
     id = textureId;
     name = std::move(label);
@@ -35,4 +35,12 @@ void Server::onDraw() {
             GlutWindow::ALIGN_CENTER
     );
     glEnable(GL_TEXTURE_2D);
+}
+
+string Server::returnStringForSave() {
+    return this->name + " ; (" + to_string(int(this->position.x)) + "," + to_string(int(this->position.y)) + ") ; ";
+}
+
+Server::~Server() {
+    delete this;
 }

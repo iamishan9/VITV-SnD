@@ -5,7 +5,7 @@
 
 float dampering = .95;
 
-Drone::Drone(Vector2 pos, GLuint textureId) {
+Drone::Drone(Vector2D pos, GLuint textureId) {
     position = pos;
     target = pos;
     id = textureId;
@@ -21,10 +21,10 @@ bool Drone::willCollideWith(Drone* d) {
     return (position.magnitude(d->position) < size);
 }
 
-void Drone::onUpdate(Vector2 avoidForce) {
+void Drone::onUpdate(Vector2D avoidForce) {
 
     // Check if current velocity exceeds the drone's maximum speed
-    if (Vector2().magnitude(velocity) > maxSpeed) {
+    if (Vector2D().magnitude(velocity) > maxSpeed) {
         // If so, reduce it to the maximum
         velocity = velocity.unit() * maxSpeed;
     }
@@ -39,10 +39,11 @@ void Drone::onUpdate(Vector2 avoidForce) {
 
     // Computes the acceleration
     if (position == target) {
-        acceleration = Vector2();
+        acceleration = Vector2D();
     } else {
-        Vector2 dirVector = (position - target).unit();
+        Vector2D dirVector = (position - target).unit();
         acceleration = dirVector;
+//        acceleration = dirVector * 0.05; // For Vincent computer
     }
 
     acceleration = acceleration + avoidForce;

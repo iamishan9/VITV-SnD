@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "glutWindow.h"
-#include "src/Vector2.h"
+#include "src/Vector2D.h"
 #include "src/Drone.h"
 #include "src/Server.h"
 
@@ -18,7 +18,7 @@ public:
     const static unsigned int windowX = 800;
     const static unsigned int windowY = 600;
 
-    Vector2 mousePos = Vector2();
+    Vector2D mousePos = Vector2D();
 
     MainWindow(const string &title, int argc, char **argv):
             GlutWindow(argc, argv, title, windowX, windowY, FIXED) {
@@ -45,8 +45,8 @@ public:
      * Computes the force that should be applied in order
      * to avoid all drones in the avoidDroneRange
      */
-    Vector2 avoidingForceForDrone(Drone* d) {
-        Vector2 avg = Vector2();
+    Vector2D avoidingForceForDrone(Drone* d) {
+        Vector2D avg = Vector2D();
         float magnitude = 0;
         for (Drone* drone : drones) {
             if (d == drone) continue;
@@ -63,7 +63,7 @@ public:
     /*
      * Prevents the user from placing a server outside the screen boundaries
      */
-    Vector2 clampToScreenDimensions(Vector2 v) {
+    Vector2D clampToScreenDimensions(Vector2D v) {
         if (v.y > 10000) v.y = -1;
         float x = v.x;
         float y = v.y;
@@ -82,11 +82,11 @@ void MainWindow::onStart() {
     serverId = GlutWindow::loadTGATexture("../assets/antenna.tga", 64, 64);
 
     // Creates a new drone
-    drones.push_back(new Drone(Vector2(10, 10), droneId));
+    drones.push_back(new Drone(Vector2D(10, 10), droneId));
 
     // Creates servers
-    servers.push_back(new Server(Vector2(250, 250), "Demo 1", serverId));
-    servers.push_back(new Server(Vector2(650, 250), "Demo 2", serverId));
+    servers.push_back(new Server(Vector2D(250, 250), "Demo 1", serverId));
+    servers.push_back(new Server(Vector2D(650, 250), "Demo 2", serverId));
 
     glClearColor(1.0,1.0,1.0,1.0);
     glEnable(GL_BLEND);
@@ -174,7 +174,7 @@ void MainWindow::onMouseDown(int button, double x, double y) {
 
     }
     if (button == MB_RIGHTCLICK) {
-        servers.push_back(new Server(Vector2(x, y), "Demo", serverId));
+        servers.push_back(new Server(Vector2D(x, y), "Demo", serverId));
     }
 }
 
@@ -183,7 +183,7 @@ void MainWindow::onMouseUp(int button, double x, double y) {
 }
 
 void MainWindow::onMouseMove(double x, double y) {
-    mousePos = Vector2(x, y);
+    mousePos = Vector2D(x, y);
     for (Drone* drone : drones) {
         drone->target = mousePos;
     }
@@ -208,8 +208,8 @@ void MainWindow::onMouseDrag(double x, double y) {
 #define KB_BACKSPACE 8
 void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
     switch(c) {
-        case 'd':
-            drones.push_back(new Drone(Vector2(10, 10), droneId));
+        case 'd': // Add a drone to the window
+            drones.push_back(new Drone(Vector2D(10, 10), droneId));
             break;
 
             case KB_DEL: case KB_BACKSPACE:
@@ -227,6 +227,12 @@ void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
                     servers = tmp;
                     break;
                 }
+            }
+            break;
+
+        case 's': // Save the configuration in the file
+            for (auto server:servers){
+                cout << server->returnStringForSave() << endl;
             }
             break;
 
