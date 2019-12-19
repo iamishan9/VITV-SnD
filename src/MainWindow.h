@@ -22,10 +22,13 @@ public:
     GLuint droneId  = 0;
     GLuint serverId = 0;
 
-    const static unsigned int windowX = 800;
-    const static unsigned int windowY = 600;
+    const static unsigned int windowX = 900;
+    const static unsigned int windowY = 550;
 
-    Vector2 mousePos = Vector2();
+    Vector2 mousePos       = Vector2();
+    Vector2 createServerAt = Vector2();
+
+    int tick = 0;
 
     MainWindow(const string &title, int argc, char **argv):
             GlutWindow(argc, argv, title, windowX, windowY, FIXED) {
@@ -44,6 +47,7 @@ public:
     void onReshape(int x, int y) override;
     void onUpdate(double dt) override;
 
+
     float avoidDronesRange = 125;
     float avoidForce       = 200;
 
@@ -61,9 +65,13 @@ public:
      */
     Vector2 clampToScreenDimensions(Vector2 v);
 
-    // wip
+
     string input = "";
     bool inputWindowEnabled = false;
+
+    /*
+     * Draw the input window
+     */
     void drawInputWindow();
 };
 

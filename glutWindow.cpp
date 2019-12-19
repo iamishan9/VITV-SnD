@@ -140,7 +140,7 @@ void GlutWindow::fillEllipse(double cx, double cy, double lx, double ly,int nsub
     glEnd();
 }
 
-void GlutWindow::drawText(double x, double y, const string &str, GlutWindow::textAlign align,void *font) {
+void GlutWindow::drawText(double x, double y, const string &str, GlutWindow::textAlign align, void *font) {
     switch (align) {
         case ALIGN_LEFT : break;
         case ALIGN_CENTER: {
@@ -229,8 +229,7 @@ static void idleFunc() {
 /* x,y: mouse coordinates                                */
 static void keyFunc(unsigned char c, int x, int y) {
     switch(c) {
-        case 27:
-        case 'q' : // quit
+        case 27: // Removed 'q' binding
 #ifdef USE_FREEGLUT
             glutLeaveMainLoop();
 #else

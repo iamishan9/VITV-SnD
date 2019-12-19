@@ -16,6 +16,8 @@ void MainWindow::onStart() {
     servers.push_back(new Server(Vector2(250, 250), "Demo 1", serverId));
     servers.push_back(new Server(Vector2(650, 250), "Demo 2", serverId));
 
+    input = "Server " + to_string(servers.size() + 1);
+
     glClearColor(1.0,1.0,1.0,1.0);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -45,7 +47,7 @@ void MainWindow::onDraw() {
             }
         }
     }
-    if (hoveredServer) {
+    if ((!inputWindowEnabled) && hoveredServer) {
         glColor3f(.75, .75,.95);
         glPushMatrix();
         fillEllipse(
@@ -77,9 +79,15 @@ void MainWindow::onDraw() {
 
     glPopMatrix();
     glDisable(GL_TEXTURE_2D);
+
+    if (inputWindowEnabled) {
+        drawInputWindow();
+    }
 }
 
 void MainWindow::onUpdate(double dt) {
+
+    tick++;
 
     // Remove the destroyed drones
     vector<Drone*> tmp;
