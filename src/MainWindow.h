@@ -28,8 +28,6 @@ public:
     Vector2 mousePos       = Vector2();
     Vector2 createServerAt = Vector2();
 
-    int tick = 0;
-
     MainWindow(const string &title, int argc, char **argv):
             GlutWindow(argc, argv, title, windowX, windowY, FIXED) {
     };
@@ -65,9 +63,9 @@ public:
      */
     Vector2 clampToScreenDimensions(Vector2 v);
 
-
     string input = "";
     bool inputWindowEnabled = false;
+    int tick = 0; // Used to blink the cursor ; Not to be used for anything else
 
     /*
      * Draw the input window
