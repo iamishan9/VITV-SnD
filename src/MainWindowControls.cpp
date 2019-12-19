@@ -98,6 +98,7 @@ void MainWindow::onMouseDrag(double x, double y) {
 
 void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
     if (inputWindowEnabled) {
+        // TODO: Fix special characters like é à è not rendering properly
         if ((c != KB_BACKSPACE) && (c != KB_RETURN)) {
             // Make sure text fits
             if (glutBitmapLength( GLUT_BITMAP_HELVETICA_18, (unsigned char *) (input + char(int(c))).c_str()) < 290) {
@@ -107,6 +108,7 @@ void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
         switch (c) {
             case KB_BACKSPACE:
                 input = input.substr(0, input.size()-1);
+                tick = 31; // Resets blink
                 break;
 
             case KB_RETURN:
@@ -269,8 +271,6 @@ void MainWindow::drawInputWindow() {
                 "Done",
                 GlutWindow::ALIGN_CENTER
         );
-
     }
-
     glPopMatrix();
 }
