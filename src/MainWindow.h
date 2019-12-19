@@ -25,7 +25,10 @@ public:
     const static unsigned int windowX = 900;
     const static unsigned int windowY = 550;
 
-    Vector2 mousePos = Vector2();
+    Vector2 mousePos       = Vector2();
+    Vector2 createServerAt = Vector2();
+
+    int tick = 0;
 
     MainWindow(const string &title, int argc, char **argv):
             GlutWindow(argc, argv, title, windowX, windowY, FIXED) {
@@ -43,6 +46,7 @@ public:
     void onKeyPressed(unsigned char c, double x, double y) override;
     void onReshape(int x, int y) override;
     void onUpdate(double dt) override;
+
 
     float avoidDronesRange = 125;
     float avoidForce       = 200;
@@ -62,10 +66,12 @@ public:
     Vector2 clampToScreenDimensions(Vector2 v);
 
 
-    int tick = 0;
     string input = "";
-    Vector2 createServerAt = Vector2();
     bool inputWindowEnabled = false;
+
+    /*
+     * Draw the input window
+     */
     void drawInputWindow();
 };
 
