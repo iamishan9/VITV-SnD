@@ -8,6 +8,7 @@ Server::Server(Vector2D pos, string label, GLuint textureId) {
     position = pos;
     id = textureId;
     name = std::move(label);
+    color = "blank";
 }
 
 void Server::onDraw() {
@@ -38,7 +39,7 @@ void Server::onDraw() {
 }
 
 string Server::returnStringForSave() {
-    return this->name + " ; (" + to_string(int(this->position.x)) + "," + to_string(int(this->position.y)) + ") ; ";
+    return this->name + " ; (" + to_string(int(this->position.x)) + "," + to_string(int(this->position.y)) + ") ; " + this->color;
 }
 
 Server::~Server() {

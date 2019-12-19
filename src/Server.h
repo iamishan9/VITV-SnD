@@ -14,10 +14,10 @@ public:
     float size = 30;
     Vector2D position;
     string name;
-    // TODO : Add a color to the server
+    string color;
 
     /**
-     * Creates a server at the pos
+     * Creates a server at the pos ; Basic color of the server is blank
      * @param pos : position of the click
      * @param label : Name of the server
      * @param textureId : ID of the texture for the drag and drop
