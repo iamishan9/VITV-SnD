@@ -159,6 +159,100 @@ void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
             }
             break;
 
+        case 's': // Save the configuration in the file
+            for (auto server:servers){
+                cout << server->returnStringForSave() << endl;
+            }
+            break;
+
+        case '1':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "red";
+                }
+            }
+            break;
+
+        case '2':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "orange";
+                }
+            }
+            break;
+
+        case '3':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "yellow";
+                }
+            }
+            break;
+
+        case '4':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "green";
+                }
+            }
+            break;
+
+        case '5':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "cyan";
+                }
+            }
+            break;
+
+        case '6':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "blue";
+                }
+            }
+            break;
+
+        case '7':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "pink";
+                }
+            }
+            break;
+
+        case '8':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "purple";
+                }
+            }
+            break;
+
+        case '9':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "magenta";
+                }
+            }
+            break;
+
+        case '0':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "grey";
+                }
+            }
+            break;
+
+        case '+':
+            for (Server* server : servers) {
+                if (mousePos.magnitude(server->position) < (server->size + 10)) {
+                    server->color = "brown";
+                }
+            }
+            break;
+
         default:
             break;
     }

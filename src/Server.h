@@ -21,15 +21,33 @@ public:
 
     VPoint* vp;
 
-    /*
-     * Creates a server at pos
+    string color;
+
+    /**
+     * Creates a server at the pos ; Basic color of the server is blank
+     * @param pos : position of the click
+     * @param label : Name of the server
+     * @param textureId : ID of the texture for the drag and drop
      */
     Server(Vector2 pos, string label, GLuint textureId);
 
-    /*
+
+    /**
+     * Deletion of a server
+     */
+    ~Server();
+
+
+    /**
      * Called at each frame to render the server
      */
     void onDraw();
+
+    /**
+     * Return the informations of the server in string
+     * @return string containing the values to write in the configuration file
+     */
+    string returnStringForSave();
 };
 
 #endif //VITV_SND_SERVER_H
