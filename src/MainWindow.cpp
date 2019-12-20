@@ -3,6 +3,24 @@
 //
 #include "MainWindow.h"
 
+
+float MainWindow::cx(float v) {
+    return 5000 + ((v / windowX) * 5000);
+}
+
+float MainWindow::cy(float v) {
+    return 5000 + ((v / windowY) * 5000);
+}
+
+void MainWindow::addServer(Vector2 pos, string name) {
+    auto server = new Server(pos, name, serverId);
+    servers.push_back(server);
+    auto vp = new VPoint(cx(pos.x), cy(pos.y));
+    server->vp = vp;
+    ver->push_back(vp);
+    edg = v->GetEdges(ver, w, w);
+}
+
 void MainWindow::onStart() {
 
     // Load the assets
@@ -12,18 +30,59 @@ void MainWindow::onStart() {
     // Creates a new drone
     drones.push_back(new Drone(Vector2(10, 10), droneId));
 
-    // Creates servers
-    servers.push_back(new Server(Vector2(250, 250), "Demo 1", serverId));
-    servers.push_back(new Server(Vector2(650, 250), "Demo 2", serverId));
+    v = new vor::Voronoi();
+    ver = new vor::Vertices();
 
-    input = "Server " + to_string(servers.size() + 1);
+    addServer(Vector2(150, 250), "Demo 1");
+    addServer(Vector2(355, 255), "Demo 2");
+    addServer(Vector2(125, 400), "Demo 3");
+
+    input = "Server";
 
     glClearColor(1.0,1.0,1.0,1.0);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+void MainWindow::drawVoronoi()
+{
+
+    if (!ver->empty()) {
+
+        edg = v->GetEdges(ver, w, w);
+
+        /*for (auto & i : *ver) {
+            glBegin(GL_QUADS);
+            glColor3f(.75, .75,.95);
+            glVertex2f( (-1 + 2*i->x/w - 0.01) * windowX,  (-1+2*i->y/w - 0.01) * windowY);
+            glVertex2f( (-1 + 2*i->x/w + 0.01) * windowX,  (-1+2*i->y/w - 0.01) * windowY);
+            glVertex2f( (-1 + 2*i->x/w + 0.01) * windowX,  (-1+2*i->y/w + 0.01) * windowY);
+            glVertex2f( (-1 + 2*i->x/w - 0.01) * windowX,  (-1+2*i->y/w + 0.01) * windowY);
+            glEnd();
+        }*/
+
+        for (auto & i : *edg) {
+            glBegin(GL_LINES);
+            glColor3f(.75, .75,.95);
+            line(
+                    (-1 + 2 * (i->start->x / w)) * windowX,
+                    (-1 + 2 * (i->start->y / w)) * windowY,
+                    (-1 + 2 * (i->end->x / w)) * windowX,
+                    (-1 + 2 * (i->end->y / w)) * windowY
+            );
+            glEnd();
+        }
+    }
+
+    glColor3f(0, 0,0);
+    drawText(10, 10, "Vertices: " + to_string(ver->size()));
+    drawText(10, 45, "Edges: " + to_string(edg->size()));
+
+}
+
 void MainWindow::onDraw() {
+
+    drawVoronoi();
 
     glColor3f(1, .5,.5);
     for (Drone* drone : drones) {
