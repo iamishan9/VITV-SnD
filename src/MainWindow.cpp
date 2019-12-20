@@ -31,7 +31,6 @@ void MainWindow::addServer(Vector2 pos, string name, string color) {
     edg = v->GetEdges(ver, w, w);
 }
 
-//TODO : check for 0 servers loaded --> explode
 void MainWindow::onStart() {
 
     // Load the assets
@@ -45,13 +44,15 @@ void MainWindow::onStart() {
     ver = new vor::Vertices();
 
     vector<Server*> servers_loaded = loadConfig("../config_files/default_config.csv");
-    cout << servers_loaded.size() << endl;
-    for (auto server:servers_loaded){
-        addServer(Vector2(server->position.x, server->position.y), server->name, server->color);
+    if(!servers_loaded.empty()){
+        for (auto server:servers_loaded){
+            addServer(Vector2(server->position.x, server->position.y), server->name, server->color);
+        }
+    }else{
+        addServer(Vector2(150, 250), "Server 1");
+        addServer(Vector2(355, 255), "Server 2");
+        addServer(Vector2(125, 400), "Server 3");
     }
-//    addServer(Vector2(150, 250), "Demo 1");
-//    addServer(Vector2(355, 255), "Demo 2");
-//    addServer(Vector2(125, 400), "Demo 3");
 
     input = "Server";
 
