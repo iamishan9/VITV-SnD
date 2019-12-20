@@ -56,8 +56,9 @@ void MainWindow::onMouseDown(int button, double x, double y) {
 
         if (inputWindowEnabled && isInputCorrect(input) && isDoneButtonHovered(mousePos, windowX, windowY)) {
             if (servers.size() < maxServers) {
-                servers.push_back(new Server(clampToScreenDimensions(createServerAt), input, serverId));
-                input = "Server " + to_string(servers.size() + 1);
+
+                addServer(clampToScreenDimensions(createServerAt), input);
+                input = "Server";
             }
             inputWindowEnabled = false;
         }
@@ -93,6 +94,8 @@ void MainWindow::onMouseDrag(double x, double y) {
     }
     if (selectedServer) {
         selectedServer->position = clampToScreenDimensions(mousePos);
+        selectedServer->vp->x = cx(selectedServer->position.x);
+        selectedServer->vp->y = cy(selectedServer->position.y);
     }
 }
 
@@ -140,9 +143,17 @@ void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
                             tmp.push_back(mserver);
                         } else {
                             cout << "Removing server" << endl;
+                            for (auto & i : *ver) {
+                                if (i == mserver->vp) {
+                                    ver->remove(i);
+                                    break;
+                                }
+                            }
+                            delete mserver->vp;
                         }
                     }
                     servers = tmp;
+
                     break;
                 }
             }

@@ -11,8 +11,16 @@
 #include "Drone.h"
 #include "Server.h"
 
+#include "../voronoi/Voronoi.h"
+
 class MainWindow: public GlutWindow {
 public:
+
+    double w = 10000;
+    vor::Voronoi* v;
+    vor::Vertices * ver;
+    vor::Vertices * dir;
+    vor::Edges * edg;
 
     int maxServers = 12;
 
@@ -22,8 +30,8 @@ public:
     GLuint droneId  = 0;
     GLuint serverId = 0;
 
-    const static unsigned int windowX = 900;
-    const static unsigned int windowY = 550;
+    const static unsigned int windowX = 800;
+    const static unsigned int windowY = 600;
 
     Vector2 mousePos       = Vector2();
     Vector2 createServerAt = Vector2();
@@ -45,6 +53,7 @@ public:
     void onReshape(int x, int y) override;
     void onUpdate(double dt) override;
 
+    void drawVoronoi();
 
     float avoidDronesRange = 125;
     float avoidForce       = 200;
@@ -71,6 +80,11 @@ public:
      * Draw the input window
      */
     void drawInputWindow();
+
+    float cx(float v);
+    float cy(float v);
+
+    void addServer(Vector2 pos, string name);
 };
 
 #endif //VITV_SND_MAINWINDOW_H

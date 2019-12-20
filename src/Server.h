@@ -7,6 +7,8 @@
 #include "../glutWindow.h"
 #include "Vector2.h"
 
+#include "../voronoi/Voronoi.h"
+
 class Server {
 public:
 
@@ -16,6 +18,8 @@ public:
 
     Vector2 position;
     string name;
+
+    VPoint* vp;
 
     /*
      * Creates a server at pos
