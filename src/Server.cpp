@@ -3,12 +3,26 @@
 //
 #include "Server.h"
 #include <utility>
+#include "../glutWindow.h"
 
 Server::Server(Vector2 pos, string label, GLuint textureId) {
     position = pos;
     id = textureId;
     name = std::move(label);
     color = "blank";
+}
+
+Server::Server(Vector2 pos, string label, GLuint textureId, string color_name) {
+    position = pos;
+    id = textureId;
+    name = std::move(label);
+    color = color_name;
+}
+
+Server::Server(Vector2 pos, string label, string color_name) {
+    position = pos;
+    name = std::move(label);
+    color = color_name;
 }
 
 void Server::onDraw() {
@@ -40,7 +54,7 @@ void Server::onDraw() {
 
 
 string Server::returnStringForSave() {
-    return this->name + " ; (" + to_string(int(this->position.x)) + "," + to_string(int(this->position.y)) + ") ; " + this->color;
+    return this->name + ";(" + to_string(int(this->position.x)) + "," + to_string(int(this->position.y)) + ");" + this->color;
 }
 
 Server::~Server() {

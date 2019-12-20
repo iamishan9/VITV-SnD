@@ -30,8 +30,8 @@ public:
     GLuint droneId  = 0;
     GLuint serverId = 0;
 
-    const static unsigned int windowX = 800;
-    const static unsigned int windowY = 600;
+    const static unsigned int windowX = 1000;
+    const static unsigned int windowY = 800;
 
     Vector2 mousePos       = Vector2();
     Vector2 createServerAt = Vector2();
@@ -85,6 +85,8 @@ public:
     float cy(float v);
 
     void addServer(Vector2 pos, string name);
+
+    void addServer(Vector2 pos, string name, string color);
 };
 
 #endif //VITV_SND_MAINWINDOW_H

@@ -2,6 +2,7 @@
 // Created by tomde on 19/12/2019.
 //
 #include "MainWindow.h"
+#include "HelperFile.h"
 
 #define MB_LEFTCLICK 0
 #define MB_RIGHTCLICK 2
@@ -160,9 +161,7 @@ void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
             break;
 
         case 's': // Save the configuration in the file
-            for (auto server:servers){
-                cout << server->returnStringForSave() << endl;
-            }
+            saveConfig("../config_files/default_config.csv", servers);
             break;
 
         case '1':

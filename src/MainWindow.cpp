@@ -2,6 +2,7 @@
 // Created by tomde on 19/12/2019.
 //
 #include "MainWindow.h"
+#include "HelperFile.h"
 
 
 float MainWindow::cx(float v) {
@@ -21,6 +22,16 @@ void MainWindow::addServer(Vector2 pos, string name) {
     edg = v->GetEdges(ver, w, w);
 }
 
+void MainWindow::addServer(Vector2 pos, string name, string color) {
+    auto server = new Server(pos, name, serverId, color);
+    servers.push_back(server);
+    auto vp = new VPoint(cx(pos.x), cy(pos.y));
+    server->vp = vp;
+    ver->push_back(vp);
+    edg = v->GetEdges(ver, w, w);
+}
+
+//TODO : check for 0 servers loaded --> explode
 void MainWindow::onStart() {
 
     // Load the assets
@@ -33,9 +44,14 @@ void MainWindow::onStart() {
     v = new vor::Voronoi();
     ver = new vor::Vertices();
 
-    addServer(Vector2(150, 250), "Demo 1");
-    addServer(Vector2(355, 255), "Demo 2");
-    addServer(Vector2(125, 400), "Demo 3");
+    vector<Server*> servers_loaded = loadConfig("../config_files/default_config.csv");
+    cout << servers_loaded.size() << endl;
+    for (auto server:servers_loaded){
+        addServer(Vector2(server->position.x, server->position.y), server->name, server->color);
+    }
+//    addServer(Vector2(150, 250), "Demo 1");
+//    addServer(Vector2(355, 255), "Demo 2");
+//    addServer(Vector2(125, 400), "Demo 3");
 
     input = "Server";
 

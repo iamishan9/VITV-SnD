@@ -1,6 +1,7 @@
 #include "HelperFile.h"
 
-void loadConfig(std::ifstream &file) {
+vector<Server*> loadConfig(std::ifstream &file) {
+    vector<Server*> servers;
 
     if ( file.is_open() ) {
         std::string line;
@@ -48,33 +49,43 @@ void loadConfig(std::ifstream &file) {
             std::cout << sName << " | " << x << " | " << y << " | " << sColor << std::endl;
 
             if(isValidLine && sName != "" && sColor != "" && x != INT32_MIN && y != INT32_MIN) {
+                servers.push_back(new Server(Vector2(x,y), sName, sColor));
                 //insert(new Server(sName, Vector2D(x,y), sColor));
-            }
-            else {
+            } else {
                 std::cerr << "While reading file, line " << lineNumber << " was rejected!" << std::endl;
             }
         }
         file.close();
-    }
-    else {
+
+        return servers;
+    } else {
         std::cerr << "Error while reading file!" << std::endl;
+        return servers;
     }
 }
 
 
-void loadConfig(std::string filePath) {
+vector<Server*> loadConfig(std::string filePath) {
     std::ifstream fileServers(filePath);
-    loadConfig(fileServers);
+    return loadConfig(fileServers);
 }
 
 
-void saveConfig(std::ifstream &file){
-
+void saveConfig(std::ofstream &file, vector<Server*> servers){
+    if(file.is_open()){
+        for (auto server:servers){
+            file << server->returnStringForSave() << endl;
+        }
+    }else{
+        std::cerr << "Error appears during opening the file" << endl;
+        return;
+    }
 }
 
 
-void saveConfig(std::string filePath){
-
+void saveConfig(std::string filePath, vector<Server*> servers){
+    std::ofstream fileServers(filePath);
+    return saveConfig(fileServers, servers);
 }
 
 

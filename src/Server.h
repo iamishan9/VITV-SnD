@@ -33,6 +33,25 @@ public:
 
 
     /**
+     * Creates a server at the pos
+     * @param pos : position of the server
+     * @param label : Name of the server
+     * @param color : color of the server
+     */
+    Server(Vector2 pos, string label, string color);
+
+
+    /**
+     * Creates a server at the pos with a color
+     * @param pos : position of the server
+     * @param label : Name of the server
+     * @param textureId: ID of the texture for the drag and drop
+     * @param color : color of the area of the server
+     */
+    Server(Vector2 pos, string label, GLuint textureId, string color);
+
+
+    /**
      * Deletion of a server
      */
     ~Server();
