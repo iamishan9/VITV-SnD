@@ -11,6 +11,7 @@
 #include "VEvent.h"
 #include <functional>
 
+#include "../src/Vector2.h"
 
 namespace vor
 {
@@ -28,6 +29,13 @@ namespace vor
 	class Voronoi
 	{
 	public:
+
+	    Vector2 toVector2(VPoint* p, float windowX, float windowY) {
+	        return Vector2(
+                    ((p->x * windowX) / 5000) - windowX,
+                    ((p->y * windowY) / 5000) - windowY
+	        );
+	    }
 		
 		/*
 			Constructor - without any parameters

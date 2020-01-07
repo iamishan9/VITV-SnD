@@ -61,6 +61,21 @@ void MainWindow::drawVoronoi()
             glEnd();
         }*/
 
+
+        for (auto & e : *edg) {
+
+            auto pos = v->toVector2(e->start, windowX, windowY);
+            glColor3f(1, .0,.0);
+            fillEllipse(pos.x, pos.y, 10, 10, 10);
+
+            pos = v->toVector2(e->end, windowX, windowY);
+            fillEllipse(pos.x, pos.y, 10, 10, 10);
+
+
+            break;
+
+        }
+
         for (auto & i : *edg) {
             glBegin(GL_LINES);
             glColor3f(.75, .75,.95);

@@ -24,7 +24,7 @@ Vector2 Vector2::unit() {
 }
 
 float Vector2::magnitude(Vector2 v) {
-    return sqrt(((v.x - x)*(v.x - x)) + ((v.y - y)*(v.y - y)));
+    return sqrt(((v.x - x) * (v.x - x)) + ((v.y - y) * (v.y - y)));
 }
 
 Vector2 Vector2::operator * (const float &v) {
@@ -35,10 +35,10 @@ bool Vector2::operator == (const Vector2 &v) {
     return (x == v.x) && (y == v.y);
 }
 
-Vector2 Vector2::operator+(const Vector2 &v) {
+Vector2 Vector2::operator + (const Vector2 &v) {
     return {x + v.x, y + v.y};
 }
 
-Vector2 Vector2::operator-(const Vector2 &v) {
+Vector2 Vector2::operator - (const Vector2 &v) {
     return {x - v.x, y - v.y};
 }

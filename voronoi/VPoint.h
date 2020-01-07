@@ -15,7 +15,7 @@ public:
 		Constructor for structure; x, y - coordinates
 	*/
 
-    VPoint(double nx, double ny) 
+    VPoint(double nx, double ny)
 	{
 		x = nx; 
 		y = ny;

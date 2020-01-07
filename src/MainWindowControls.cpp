@@ -56,7 +56,6 @@ void MainWindow::onMouseDown(int button, double x, double y) {
 
         if (inputWindowEnabled && isInputCorrect(input) && isDoneButtonHovered(mousePos, windowX, windowY)) {
             if (servers.size() < maxServers) {
-
                 addServer(clampToScreenDimensions(createServerAt), input);
                 input = "Server";
             }
@@ -117,8 +116,8 @@ void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
             case KB_RETURN:
                 if (!isInputCorrect(input)) return;
                 if (servers.size() < maxServers) {
-                    servers.push_back(new Server(clampToScreenDimensions(createServerAt), input, serverId));
-                    input = "Server " + to_string(servers.size() + 1);
+                    addServer(clampToScreenDimensions(createServerAt), input);
+                    input = "Server";
                 }
                 inputWindowEnabled = false;
                 break;
