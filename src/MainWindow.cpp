@@ -43,7 +43,7 @@ void MainWindow::onStart() {
     v = new vor::Voronoi();
     ver = new vor::Vertices();
 
-    vector<Server*> servers_loaded = loadConfig("../config_files/default_config.csv");
+    vector<Server*> servers_loaded = loadConfig(MyFile::csv_file);
     if(!servers_loaded.empty()){
         for (auto server:servers_loaded){
             addServer(Vector2(server->position.x, server->position.y), server->name, server->color);

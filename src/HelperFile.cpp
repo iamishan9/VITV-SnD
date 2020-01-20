@@ -1,5 +1,8 @@
 #include "HelperFile.h"
 
+// Fixed the name to the default configuration file
+string MyFile::csv_file = "../config_files/default_config.csv";
+
 vector<Server*> loadConfig(std::ifstream &file) {
     vector<Server*> servers;
 

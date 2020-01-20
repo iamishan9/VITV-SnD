@@ -8,6 +8,12 @@
 #include "Server.h"
 
 
+class MyFile {
+public:
+    static string csv_file; // Use to store the name of the config file used in the session
+};
+
+
 /**
  * Load a config file with the descriptor
  * @param file : descriptor of file

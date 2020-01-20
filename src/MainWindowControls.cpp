@@ -161,7 +161,7 @@ void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
             break;
 
         case 's': // Save the configuration in the file
-            saveConfig("../config_files/default_config.csv", servers);
+            saveConfig(MyFile::csv_file, servers);
             break;
 
         case '1':

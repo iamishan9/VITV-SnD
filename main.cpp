@@ -1,5 +1,6 @@
 #pragma once
 #include "src/MainWindow.h"
+#include "src/HelperFile.h"
 #include <algorithm>
 
 
@@ -38,7 +39,6 @@ bool arg_is_option(char** begin, char** end, const std::string& option) {
  * @param argv : arguments
  * @return 0 for good exec ; 1 for the -h ; an another number otherwise
  */
- //TODO : Implementation of the -c option in the main program
 int main(int argc, char **argv) {
     if(arg_is_option(argv, argv+argc, "-h")) {
         std::cout << "Two options are available for this program : " << std::endl;
@@ -47,8 +47,7 @@ int main(int argc, char **argv) {
         return 1;
 
     }else if(arg_is_option(argv, argv+argc, "-c") && argc == 3){
-        std::cout << "Usage of -c option" << std::endl;
-        return 1;
+        MyFile::csv_file = std::string("../config_files/") + argv[2];
 
     }else if(argc != 1){
         std::cout << "Usage of incorrect options." << std::endl;
