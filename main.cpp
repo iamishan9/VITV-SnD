@@ -2,6 +2,14 @@
 #include "src/MainWindow.h"
 #include <algorithm>
 
+
+/**
+ *
+ * @param begin
+ * @param end
+ * @param option
+ * @return
+ */
 char* arg_get_option(char **begin, char **end, const std::string &option) {
     char **it = std::find(begin, end, option);
 
@@ -10,6 +18,7 @@ char* arg_get_option(char **begin, char **end, const std::string &option) {
 
     return 0;
 }
+
 
 /**
  * Test if an argument is an option for the program
