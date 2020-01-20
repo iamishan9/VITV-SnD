@@ -1,7 +1,3 @@
-//
-// Created by vince on 20/12/2019.
-//
-
 #include "Colors.h"
 
 const int * Colors::getColorByString(string name_color){

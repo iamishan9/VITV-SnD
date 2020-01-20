@@ -1,9 +1,3 @@
-//
-// Created by vince on 20/12/2019.
-//
-
-
-
 #ifndef VITV_SND__H
 #define VITV_SND__H
 #include <string>
