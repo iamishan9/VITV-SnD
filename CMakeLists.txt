@@ -6,6 +6,7 @@ set(PROJECT_FILES
         main.cpp
         server.cpp server.h
         vector2d.cpp vector2d.h
+        glutWindow.h glutWindow.cpp
         config_manager.cpp config_manager.h geometric_algorithms.cpp geometric_algorithms.h geometry.cpp geometry.h color.h)
 
 project(${PROJECT_NAME})

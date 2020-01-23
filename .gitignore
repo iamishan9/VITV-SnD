@@ -1,6 +1,6 @@
 cmake-build-debug/
 CMakeLists.txt
-
+.idea/
 # C++ gitignore template
 
 # Prerequisites
