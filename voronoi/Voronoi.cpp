@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <set>
+#include <cmath>
 
 using namespace vor;
 
@@ -58,19 +59,19 @@ Edges * Voronoi::GetEdges(Vertices * v, int w, int h)
 	return edges;
 }
 
-void	Voronoi::InsertParabola(VPoint * p)
+void Voronoi::InsertParabola(VPoint * p)
 {
 	if(!root){root = new VParabola(p); return;}
 
-	if(root->isLeaf && root->site->y - p->y < 1) // degenerovaný pøípad - obì spodní místa ve stejné výšce
+	if(root->isLeaf && root->site->y - p->y < 1) // degenerovanï¿½ pï¿½ï¿½pad - obï¿½ spodnï¿½ mï¿½sta ve stejnï¿½ vï¿½ï¿½ce
 	{
 		VPoint * fp = root->site;
 		root->isLeaf = false;
 		root->SetLeft( new VParabola(fp) );
 		root->SetRight(new VParabola(p)  );
-		VPoint * s = new VPoint((p->x + fp->x)/2, height); // zaèátek hrany uprostøed míst
+		VPoint * s = new VPoint((p->x + fp->x)/2, height); // zaï¿½ï¿½tek hrany uprostï¿½ed mï¿½st
 		points.push_back(s);
-		if(p->x > fp->x) root->edge = new VEdge(s, fp, p); // rozhodnu, který vlevo, který vpravo
+		if(p->x > fp->x) root->edge = new VEdge(s, fp, p); // rozhodnu, kterï¿½ vlevo, kterï¿½ vpravo
 		else root->edge = new VEdge(s, p, fp);
 		edges->push_back(root->edge);
 		return;
@@ -93,7 +94,7 @@ void	Voronoi::InsertParabola(VPoint * p)
 	el->neighbour = er;
 	edges->push_back(el);
 
-	// pøestavuju strom .. vkládám novou parabolu
+	// pï¿½estavuju strom .. vklï¿½dï¿½m novou parabolu
 	par->edge = er;
 	par->isLeaf = false;
 
@@ -112,7 +113,7 @@ void	Voronoi::InsertParabola(VPoint * p)
 	CheckCircle(p2);
 }
 
-void	Voronoi::RemoveParabola(VEvent * e)
+void Voronoi::RemoveParabola(VEvent * e)
 {
 	VParabola * p1 = e->arch;
 
@@ -122,7 +123,7 @@ void	Voronoi::RemoveParabola(VEvent * e)
 	VParabola * p0 = VParabola::GetLeftChild(xl);
 	VParabola * p2 = VParabola::GetRightChild(xr);
 
-	if(p0 == p2) std::cout << "chyba - pravá a levá parabola má stejné ohnisko!\n";
+	if(p0 == p2) std::cout << "chyba - pravï¿½ a levï¿½ parabola mï¿½ stejnï¿½ ohnisko!\n";
 
 	if(p0->cEvent){ deleted.insert(p0->cEvent); p0->cEvent = 0; }
 	if(p2->cEvent){ deleted.insert(p2->cEvent); p2->cEvent = 0; }
@@ -217,7 +218,7 @@ VParabola * Voronoi::GetParabolaByX(double xx)
 	VParabola * par = root;
 	double x = 0.0;
 
-	while(!par->isLeaf) // projdu stromem dokud nenarazím na vhodný list
+	while(!par->isLeaf) // projdu stromem dokud nenarazï¿½m na vhodnï¿½ list
 	{
 		x = GetXOfEdge(par, ly);
 		if(x>xx) par = par->Left();
@@ -226,7 +227,7 @@ VParabola * Voronoi::GetParabolaByX(double xx)
 	return par;
 }
 
-double	Voronoi::GetY(VPoint * p, double x) // ohnisko, x-souøadnice
+double	Voronoi::GetY(VPoint * p, double x) // ohnisko, x-souï¿½adnice
 {
 	double dp = 2 * (p->y - ly);
 	double a1 = 1 / dp;

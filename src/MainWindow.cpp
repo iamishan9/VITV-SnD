@@ -3,6 +3,7 @@
 //
 #include "MainWindow.h"
 #include "HelperFile.h"
+#include <climits>
 
 
 float MainWindow::cx(float v) {

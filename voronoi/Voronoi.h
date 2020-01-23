@@ -48,7 +48,7 @@ namespace vor
 			All the data structures are managed by this class
 		*/
 
-		Edges *			GetEdges(Vertices * v, int w, int h);
+		Edges *	GetEdges(Vertices * v, int w, int h);
 
 	private:
 
