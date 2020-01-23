@@ -15,14 +15,17 @@ public:
     Vector2D();
 
     float length();
-
+    float norm();
+    Vector2D ortho();
     Vector2D unit();
 
     float magnitude(Vector2D v);
 
     Vector2D operator+(const Vector2D &v) const;
     Vector2D operator-(const Vector2D &v) const;
-    Vector2D operator * (const float &v) const;
+    Vector2D operator*(const float &v) const;
+    float operator*(const Vector2D &op2) const;
+    friend Vector2D operator*(float a, const Vector2D &v);
 
     bool operator == (const Vector2D &v) const;
     friend std::ostream& operator << (std::ostream &out, const Vector2D &v);
