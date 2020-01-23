@@ -3,6 +3,7 @@
 
 #include "glutWindow.h"
 
+#include "color.h"
 #include "config_manager.h"
 #include "server.h"
 #include "vector2d.h"
@@ -14,16 +15,11 @@ public:
     const static unsigned int WINDOW_X = 1000;
     const static unsigned int WINDOW_Y = 800;
 
-    const float BLACK[4]={0.0,0.0,0.0,1.0f};
-    const float GREY[4]={0.75f,0.75f,0.75f,1.0f};
-    const float RED[4]={1.0f,0.0,0.0,1.0f};
-    const float ORANGE[4]={1.0f,0.27f,0.0,1.0f};
-    const float YELLOW[4]={1.0f,1.0f,0.0,1.0f};
-    const float GREEN[4]={0.0,1.0f,0.0,1.0f};
-    const float BLUE[4]={0.0,0.0,1.0f,1.0f};
+
 
     vector<Server*> servers;
     Polygon convex_hull;
+    Mesh mesh;
 
     MainWindow(const string &title, int argc, char **argv):
             GlutWindow(argc, argv, title, WINDOW_X, WINDOW_Y, FIXED) {
@@ -75,6 +71,14 @@ void MainWindow::onStart() {
 
     // Delaunay
 
+    mesh = Mesh(points);
+
+    for (auto triangle : mesh.triangles) {
+        std::cout << "p1: " << *(triangle.ptr[0]) << "p2: " << triangle.ptr[1] << "p3: " << triangle.ptr[2] << std::endl;
+    }
+
+
+
     // Voronoi
 
     glClearColor(1.0,1.0,1.0,1.0);
@@ -116,8 +120,12 @@ void MainWindow::onDraw() {
 
 
 
-    glPushMatrix();
+/*    glPushMatrix();
     convex_hull.onDraw();
+    glPopMatrix();*/
+
+    glPushMatrix();
+    mesh.onDraw();
     glPopMatrix();
 
     glEnable(GL_TEXTURE_2D);

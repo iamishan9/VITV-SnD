@@ -18,6 +18,13 @@ float Vector2D::length() {
     return std::sqrt((x * x) + (y * y));
 }
 
+float Vector2D::norm() {
+    return sqrt(x*x+y*y);
+}
+Vector2D Vector2D::ortho() {
+    return Vector2D(-y,x);
+}
+
 Vector2D Vector2D::unit() {
     float l = length();
     return {x/l, y/l};
@@ -27,8 +34,16 @@ float Vector2D::magnitude(Vector2D v) {
     return sqrt(((v.x - x)*(v.x - x)) + ((v.y - y)*(v.y - y)));
 }
 
-Vector2D Vector2D::operator * (const float &v) const {
+Vector2D Vector2D::operator*(const float &v) const {
     return {x * v, y * v};
+}
+
+Vector2D operator*(float a, const Vector2D &v) {
+    return Vector2D(a*v.x,a*v.y);
+}
+
+float Vector2D::operator*(const Vector2D &op2) const {
+    return x * op2.x + y * op2.y;
 }
 
 bool Vector2D::operator == (const Vector2D &v) const {
