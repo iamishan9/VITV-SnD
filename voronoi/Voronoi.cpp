@@ -3,7 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <set>
-#include <tgmath.h>
+#include <ctgmath>
 
 using namespace vor;
 

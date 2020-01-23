@@ -118,8 +118,9 @@ void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
             case KB_RETURN:
                 if (!isInputCorrect(input)) return;
                 if (servers.size() < maxServers) {
-                    servers.push_back(new Server(clampToScreenDimensions(createServerAt), input, serverId));
-                    input = "Server " + to_string(servers.size() + 1);
+
+                    addServer(clampToScreenDimensions(createServerAt), input);
+                    input = "Server";
                 }
                 inputWindowEnabled = false;
                 break;

@@ -3,7 +3,7 @@
 //
 #include "Drone.h"
 
-float dampering = .95;
+float dampening = .95;
 
 Drone::Drone(Vector2 pos, GLuint textureId) {
     position = pos;
@@ -36,7 +36,7 @@ void Drone::onUpdate(Vector2 avoidForce) {
     // Moves the drone in its direction
     position = position - velocity;
 
-    velocity = velocity * dampering;
+    velocity = velocity * dampening;
 
     // Computes the acceleration
     if (position == target) {
