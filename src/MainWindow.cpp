@@ -1,6 +1,7 @@
 //
 // Created by tomde on 19/12/2019.
 //
+#include <climits>
 #include "MainWindow.h"
 #include "HelperFile.h"
 
