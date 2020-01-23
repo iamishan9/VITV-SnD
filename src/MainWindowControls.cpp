@@ -77,9 +77,9 @@ void MainWindow::onMouseUp(int button, double x, double y) {
 void MainWindow::onMouseMove(double x, double y) {
     mousePos = Vector2(x, y);
     if (inputWindowEnabled) return;
-    for (Drone* drone : drones) {
-        drone->target = mousePos;
-    }
+//    for (Drone* drone : drones) {
+//        drone->target = mousePos;
+//    }
 }
 
 void MainWindow::onMouseDrag(double x, double y) {
@@ -97,6 +97,10 @@ void MainWindow::onMouseDrag(double x, double y) {
         selectedServer->position = clampToScreenDimensions(mousePos);
         selectedServer->vp->x = cx(selectedServer->position.x);
         selectedServer->vp->y = cy(selectedServer->position.y);
+
+        for(Drone* drone:selectedServer->drones){
+            drone->position = selectedServer->position; // Causes crash of the drones
+        }
     }
 }
 
@@ -132,6 +136,16 @@ void MainWindow::onKeyPressed(unsigned char c, double x, double y) {
     switch (c) {
         case 'd':
             drones.push_back(new Drone(Vector2(10, 10), droneId));
+
+            for(Server* server : servers){
+                if(server->drones.size() < server->nb_drones_max){
+                    drones.at(drones.size() - 1)->target = Vector2(server->position.x, server->position.y);
+                    server->drones.push_back(drones.at(drones.size() - 1));
+
+                    break;
+                }
+            }
+
             break;
 
         case KB_DEL: case KB_BACKSPACE:

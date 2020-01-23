@@ -6,7 +6,6 @@
 
 #include "../glutWindow.h"
 #include "Vector2.h"
-#include "Server.h"
 
 class Drone {
 public:
@@ -23,7 +22,12 @@ public:
     Vector2 velocity     = Vector2();
     Vector2 acceleration = Vector2();
 
-    Server* server;
+
+    /**
+     * Default constructor for a drone
+     */
+    Drone();
+
 
     /**
      * Creates a drone at pos
@@ -38,6 +42,7 @@ public:
     */
     void onDraw();
 
+
     /**
      * Called at each frame to update drone movement
      * @param avoidForce : Vector use to change the movement of the drone
@@ -50,6 +55,7 @@ public:
      * @return true if the drone collide with the other given drone
     */
     bool willCollideWith(Drone* d);
+
 
     /**
      * Called when the drone did collide with another drone

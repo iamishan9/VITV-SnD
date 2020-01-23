@@ -39,7 +39,7 @@ void MainWindow::onStart() {
     serverId = GlutWindow::loadTGATexture("../assets/antenna.tga", 64, 64);
 
     // Creates a new drone
-    drones.push_back(new Drone(Vector2(10, 10), droneId));
+//    drones.push_back(new Drone(Vector2(10, 10), droneId));
 
     v = new vor::Voronoi();
     ver = new vor::Vertices();
@@ -102,19 +102,21 @@ void MainWindow::onDraw() {
 
     drawVoronoi();
 
+    // Draw the line for each drones associated to server
     glColor3f(1, .5,.5);
-    for (Drone* drone : drones) {
-        if (drone->server) {
+    for(Server* server:servers){
+        for (Drone* drone : server->drones) {
             glPushMatrix();
             line(
                     drone->position.x,
                     drone->position.y,
-                    drone->server->position.x,
-                    drone->server->position.y
+                    server->position.x,
+                    server->position.y
             );
             glPopMatrix();
         }
     }
+
 
     Server* hoveredServer = selectedServer;
     if (!hoveredServer) {
@@ -194,7 +196,7 @@ void MainWindow::onUpdate(double dt) {
                 closest = server;
             }
         }
-        drone->server = closest;
+//        drone->server = closest;
     }
 
     // Compute the collisions

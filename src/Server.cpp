@@ -5,11 +5,15 @@
 #include <utility>
 #include "../glutWindow.h"
 
+Server::Server(){}
+
 Server::Server(Vector2 pos, string label, GLuint textureId) {
     position = pos;
     id = textureId;
     name = std::move(label);
     color = "blank";
+    nb_drones_max = 2; // To delete
+    current_nb_drones = 0;
 }
 
 Server::Server(Vector2 pos, string label, GLuint textureId, string color_name) {
@@ -17,12 +21,16 @@ Server::Server(Vector2 pos, string label, GLuint textureId, string color_name) {
     id = textureId;
     name = std::move(label);
     color = color_name;
+    nb_drones_max = 2; // To delete
+    current_nb_drones = 0;
 }
 
 Server::Server(Vector2 pos, string label, string color_name) {
     position = pos;
     name = std::move(label);
     color = color_name;
+    nb_drones_max = 2; // To delete
+    current_nb_drones = 0;
 }
 
 void Server::onDraw() {
@@ -49,6 +57,13 @@ void Server::onDraw() {
             name,
             GlutWindow::ALIGN_CENTER
     );
+
+    // TODO : Delete this
+    GlutWindow::line(position.x + 100, position.y + 100, position.x - 100, position.y + 100);
+    GlutWindow::line(position.x + 100, position.y + 100, position.x + 100, position.y - 100);
+    GlutWindow::line(position.x + 100, position.y - 100, position.x - 100, position.y - 100);
+    GlutWindow::line(position.x - 100, position.y - 100, position.x - 100, position.y + 100);
+
     glEnable(GL_TEXTURE_2D);
 }
 
@@ -57,6 +72,16 @@ string Server::returnStringForSave() {
     return this->name + ";(" + to_string(int(this->position.x)) + "," + to_string(int(this->position.y)) + ");" + this->color;
 }
 
+
 Server::~Server() {
     delete this;
+}
+
+
+void Server::setNumberOfDrones(double field_area, double zone_area, int total_drones){
+    nb_drones_max = (int) ((field_area / zone_area) * total_drones);
+}
+
+void onDraw() {
+
 }

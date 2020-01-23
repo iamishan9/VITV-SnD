@@ -4,10 +4,12 @@
 #ifndef VITV_SND_SERVER_H
 #define VITV_SND_SERVER_H
 
+#include <vector>
 #include "../glutWindow.h"
 #include "Vector2.h"
 
 #include "../voronoi/Voronoi.h"
+#include "Drone.h"
 
 class Server {
 public:
@@ -22,6 +24,17 @@ public:
     VPoint* vp;
 
     string color;
+
+    int nb_drones_max; // TODO : change the value of nb_drones in the constructors
+    int current_nb_drones;
+    std::vector<Drone*> drones;
+
+
+    /**
+     * Default constructor for a server
+     */
+    Server();
+
 
     /**
      * Creates a server at the pos ; Basic color of the server is blank
@@ -62,11 +75,21 @@ public:
      */
     void onDraw();
 
+
     /**
      * Return the informations of the server in string
      * @return string containing the values to write in the configuration file
      */
     string returnStringForSave();
+
+
+    /**
+     * Set the number of drones giving by the field_area of the window and the zone area of the server
+     * @param field_area : The area field of the window
+     * @param zone_area : The area calculated for the server zone
+     * @param total_drones : Total number of drones on the area
+     */
+    void setNumberOfDrones(double field_area, double zone_area, int total_drones);
 };
 
 #endif //VITV_SND_SERVER_H
