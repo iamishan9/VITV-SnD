@@ -44,26 +44,25 @@ void MainWindow::onMouseDown(int button, double x, double y) {
                     return;
                 }
             }
-
             inputWindowEnabled = true;
             createServerAt = mousePos;
             return;
         }
 
+        // Close button
         if (inputWindowEnabled && isCloseButtonHovered(mousePos, windowX, windowY)) {
             inputWindowEnabled = false;
             return;
         }
 
+        // Done button
         if (inputWindowEnabled && isInputCorrect(input) && isDoneButtonHovered(mousePos, windowX, windowY)) {
             if (servers.size() < maxServers) {
-
                 addServer(clampToScreenDimensions(createServerAt), input);
                 input = "Server";
             }
             inputWindowEnabled = false;
         }
-
     }
 
     if (button == MB_RIGHTCLICK) {

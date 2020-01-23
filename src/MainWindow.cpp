@@ -62,8 +62,7 @@ void MainWindow::onStart() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void MainWindow::drawVoronoi()
-{
+void MainWindow::drawVoronoi() {
 
     if (!ver->empty()) {
 

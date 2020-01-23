@@ -30,8 +30,8 @@ public:
     GLuint droneId  = 0;
     GLuint serverId = 0;
 
-    const static unsigned int windowX = 1000;
-    const static unsigned int windowY = 800;
+    const static unsigned int windowX = 800;
+    const static unsigned int windowY = 500;
 
     Vector2 mousePos       = Vector2();
     Vector2 createServerAt = Vector2();
@@ -55,37 +55,55 @@ public:
 
     void drawVoronoi();
 
-    float avoidDronesRange = 125;
-    float avoidForce       = 200;
+    float avoidDronesRange = 125; // The detection radius around a drone for other drones
+    float avoidForce       = 200; // A base multiplier for the avoidForce
 
-    /*
+    /**
      * Computes the force that should be applied in order
      * to avoid all drones in the avoidDronesRange
+     * @param d : The drone the avoidForce is computed for
+     * @returns the avoided force
      */
     Vector2 avoidingForceForDrone(Drone* d);
 
-
-    float padding = 25;
-
-    /*
+    /**
      * Prevents the user from placing a server outside the screen boundaries
+     * @param v : The raw value
+     * @returns the clamped value
      */
     Vector2 clampToScreenDimensions(Vector2 v);
+
+    float padding = 25; // The clamp padding, should be half a server width
+
+    /**
+     * Render the input window
+     */
+    void drawInputWindow();
 
     string input = "";
     bool inputWindowEnabled = false;
     int tick = 0; // Used to blink the cursor ; Not to be used for anything else
 
-    /*
-     * Draw the input window
-     */
-    void drawInputWindow();
 
+    /**
+     * To be removed
+     */
     float cx(float v);
     float cy(float v);
 
+    /**
+     * Creates a server instance in the workspace
+     * @param : pos Position
+     * @param : name Name
+     */
     void addServer(Vector2 pos, string name);
 
+    /**
+     * Creates a server instance in the workspace
+     * @param : pos Position
+     * @param : name Name
+     * @param : color Color
+     */
     void addServer(Vector2 pos, string name, string color);
 };
 
