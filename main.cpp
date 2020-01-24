@@ -120,9 +120,9 @@ void MainWindow::onDraw() {
 
 
 
-/*    glPushMatrix();
+    glPushMatrix();
     convex_hull.onDraw();
-    glPopMatrix();*/
+    glPopMatrix();
 
     glPushMatrix();
     mesh.onDraw();
