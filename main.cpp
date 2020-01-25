@@ -1,75 +1,182 @@
-#pragma once
-#include "src/MainWindow.h"
-#include "src/HelperFile.h"
-#include <algorithm>
+#include <iostream>
+#include <vector>
+
+#include "glutWindow.h"
+
+#include "color.h"
+#include "config_manager.h"
+#include "geometric_algorithms.h"
+#include "geometry.h"
+#include "server.h"
+#include "vector2d.h"
 
 
-/**
- * Check if an option is inside the command line
- * @param begin : The begin of the tab of arguments
- * @param end : End of the tab of arguments
- * @param option : Option we want to see
- * @return True if the option is finded ; False otherwise
- */
-char* arg_get_option(char **begin, char **end, const std::string &option) {
-    char **it = std::find(begin, end, option);
+class MainWindow: public GlutWindow {
+public:
+    const static unsigned int WINDOW_X = 1000;
+    const static unsigned int WINDOW_Y = 800;
 
-    if (it != end && ++it != end)
-        return *it;
+    std::vector<Server*> servers;
+    Mesh mesh;
+    Polygon convex_hull;
 
-    return 0;
-}
+    std::vector<Vector2D> test_pts{{280,740},{700,750},{500,700},{900,720},{50,410},{340,400},{650,390},{950,300 },
+        { 400 ,200 },{550,190},{200,50},{800,100}};
+
+    std::vector<Vector2D> points;
 
 
-/**
- * Test if an argument is an option for the program
- * @param begin : The begin of the tab of arguments
- * @param end : End of the tab of arguments
- * @param option : Option we want to see
- * @return True if the option is finded ; False otherwise
- */
-bool arg_is_option(char** begin, char** end, const std::string& option) {
-    return std::find(begin, end, option) != end;
-}
 
+    MainWindow(const string &title, int argc, char **argv):
+            GlutWindow(argc, argv, title, WINDOW_X, WINDOW_Y, FIXED) {
+    };
 
-/**
- * Main of the program
- * @param argc : number of arguments
- * @param argv : arguments
- * @return 0 for good exec ; 1 for the -h ; an another number otherwise
- */
-int main(int argc, char **argv) {
-    if(arg_is_option(argv, argv+argc, "-h")) {
-        std::cout << "Two options are available for this program : " << std::endl;
-        std::cout << "  -h : Give you the help for the different options ;" << std::endl;
-        std::cout << "  -c name_file : Use a configuration file different thant the original one." << std::endl << std::endl;
-        std::cout << "Some keyboard key are available during the execution of the program :" << std::endl;
-        std::cout << "  s : Save the configuration in the file given" << std::endl;
-        std::cout << "  Click : Add a server on the field" << std::endl;
-        std::cout << "  del : Delete the selected server on the field" << std::endl;
-        std::cout << "  d : Add a drone to the field" << std::endl;
-        std::cout << "  1 : Change the color of the selected server to red" << std::endl;
-        std::cout << "  2 : Change the color of the selected server to orange" << std::endl;
-        std::cout << "  3 : Change the color of the selected server to yellow" << std::endl;
-        std::cout << "  4 : Change the color of the selected server to green" << std::endl;
-        std::cout << "  5 : Change the color of the selected server to cyan" << std::endl;
-        std::cout << "  6 : Change the color of the selected server to blue" << std::endl;
-        std::cout << "  7 : Change the color of the selected server to pink" << std::endl;
-        std::cout << "  8 : Change the color of the selected server to purple" << std::endl;
-        std::cout << "  9 : Change the color of the selected server to magenta" << std::endl;
-        std::cout << "  0 : Change the color of the selected server to grey" << std::endl;
-        std::cout << "  + : Change the color of the selected server to brown" << std::endl;
-        return 1;
+    void onStart() override;
+    void onDraw() override;
+    void onQuit() override;
+    void onMouseDown(int button, double x, double y) override;
+    void onMouseUp(int button, double x, double y) override;
+    void onMouseDrag(double x, double y) override;
+    void onMouseMove(double x, double y) override;
+    void onKeyPressed(unsigned char c, double x, double y) override;
+    void onReshape(int x, int y) override;
+    void onUpdate(double dt) override;
 
-    }else if(arg_is_option(argv, argv+argc, "-c") && argc == 3){
-        MyFile::csv_file = std::string("../config_files/") + argv[2];
+};
 
-    }else if(argc != 1){
-        std::cout << "Usage of incorrect options." << std::endl;
-        return -1;
+void MainWindow::onStart() {
+    std::cout << "\nonStart: begin\n" << std::endl;
+    servers = load_config(DEFAULT_CONFIG);
+    std::cout << "onStart: config read" << std::endl;
+
+    for(auto server : servers) {
+        points.push_back(server->position);
     }
 
+//    points.push_back(Vector2D(221, 128));
+//    points.push_back(Vector2D(141, 652));
+//    points.push_back(Vector2D(414, 406));
+//    points.push_back(Vector2D(876, 569));
+//    points.push_back(Vector2D(532, 756));
+//    points.push_back(Vector2D(690, 210));
+//
+
+    // Graham
+
+    convex_hull = Polygon(graham(points));
+
+    // Delaunay
+
+//    mesh = Mesh(points);
+//    convex_hull = Polygon(graham(points));
+
+    convex_hull = Polygon(graham(test_pts));
+    mesh = Mesh(test_pts);
+
+//    std::cout << "\n READ TRIANGLES: "<< std::endl;
+//    for (const auto& triangle : mesh.triangles) {
+//        std::cout << "p1: " << *triangle.ptr[0] << " p2: " << *triangle.ptr[1] << " p3: " << *triangle.ptr[2] << std::endl;
+//    }
+
+    // Voronoi
+
+    glClearColor(1.0,1.0,1.0,1.0);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    std::cout << "\nonStart: end\n" << std::endl;
+}
+
+void MainWindow::onDraw() {
+    //std::cout << "onDraw begin" << std::endl;
+
+    glPushMatrix();
+    glTranslatef(10,10,0);
+    glColor3fv(RED);
+    glBegin(GL_QUADS);
+    glVertex2f(0.0,-2.0);
+    glVertex2f(100.0,-2.0);
+    glVertex2f(100.0,2.0);
+    glVertex2f(0.0,2.0);
+    glEnd();
+    glBegin(GL_TRIANGLES);
+    glVertex2f(110.0,0.0);
+    glVertex2f(90.0,-10.0);
+    glVertex2f(90.0,10.0);
+    glEnd();
+    glColor3fv(GREEN);
+    glBegin(GL_QUADS);
+    glVertex2f(-2.0,0.0);
+    glVertex2f(2.0,0.0);
+    glVertex2f(2.0,100.0);
+    glVertex2f(-2.0,100.0);
+    glEnd();
+    glBegin(GL_TRIANGLES);
+    glVertex2f(0.0,110.0);
+    glVertex2f(-10.0,90.0);
+    glVertex2f(10.0,90.0);
+    glEnd();
+    glPopMatrix();
+
+    convex_hull.onDraw();
+    mesh.onDraw();
+
+//    glEnable(GL_TEXTURE_2D);
+//    glColor3f(1.0f,1.0f,1.0f);
+//    for (auto &server : servers) {
+//        glPushMatrix();
+//        server->onDraw();
+//        glPopMatrix();
+//    }
+//    glDisable(GL_TEXTURE_2D);
+
+
+
+
+
+    //std::cout << "onDraw: end" << std::endl;
+}
+
+void MainWindow::onReshape(int x, int y) {
+    // Locks screen dimensions
+//    glutReshapeWindow(WINDOW_X, WINDOW_Y);
+}
+
+void MainWindow::onMouseDown(int button, double x, double y){
+}
+void MainWindow::onMouseUp(int button, double x, double y){}
+void MainWindow::onMouseDrag(double x, double y){}
+
+void MainWindow::onMouseMove(double x, double y){
+    Vector2D v((float)x,(float)y);
+
+    for (auto &triangle : mesh.triangles) {
+        triangle.onMouseMove(v);
+    }
+}
+
+void MainWindow::onKeyPressed(unsigned char c, double x, double y){
+//    cout<<"hello"<<endl;
+    switch(c) {
+        case 'd':
+//            mesh.solveDelaunay();
+            mesh.checkDelaunay();
+            mesh.checkDelaunay();
+            mesh.checkDelaunay();
+            break;
+        case 'v':
+            cout<<"Voronoi not done"<<endl;
+            break;
+        default:
+            break;
+    }
+}
+void MainWindow::onUpdate(double dt){}
+
+void MainWindow::onQuit() {}
+
+int main(int argc, char **argv) {
+    std::cout << "Hello, World!" << std::endl;
     MainWindow("Drones", argc, argv).start();
+    std::cout << "Good bye, World!" << std::endl;
     return 0;
 }
