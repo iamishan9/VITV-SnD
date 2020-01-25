@@ -112,7 +112,6 @@ public:
     bool isInsideCircle(const Vector2D &P) const;
 
     Vector2D* getUniquePoint(Triangle *triangle);
-    Vector2D* getNextPoint(Vector2D *vector);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

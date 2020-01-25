@@ -496,56 +496,5 @@ Vector2D* Triangle::getUniquePoint(Triangle *triangle) {
     }
 }
 
-Vector2D* Triangle::getNextPoint(Vector2D *vector) {
-    for(int i=0; i<3; i++) {
-        bool a = ptr[i]->x == vector->x && ptr[i]->y == vector->y;
-        if(a) {
-            i++;
-            return (ptr[i%3]);
-        }
-    }
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//void flip( Triangle *curr,  Triangle *neighbor){
-//    for(int a=0;a<3;a++){
-//        cout<<"BEFORE curr  "<<curr->ptr[a]<<"and neighbor "<<neighbor->ptr[a]<<endl;
-//    }
-//
-//    list<Vector2D *> points;
-//    for(int i=0;i<3;i++){
-//        if(find(points.begin(), points.end(), curr->ptr[i]) != points.end()) {
-//            cout<<"The point is already contained ====>"<<curr->ptr[i] <<endl;
-//        }else{
-//            points.push_back(curr->ptr[i]);
-//        }
-//    }
-//
-//    for(int j=0; j<3; j++){
-//        if(find(points.begin(), points.end(), neighbor->ptr[j]) != points.end()) {
-//            cout<<"The point is already contained ====>"<<neighbor->ptr[j] <<endl;
-//        }else{
-//            points.push_back(neighbor->ptr[j]);
-//        }
-//    }
-//
-//    list<Vector2D *> copyPoints = points;
-//    points.pop_front();
-//    Vector2D *lastPoint = points.back();
-//    copyPoints.pop_back();
-//    copyPoints.pop_back();
-//    copyPoints.push_front(lastPoint);
-//
-//    for(int k=0; k<3;k++){
-//        curr->ptr[k] = points.front();
-//        neighbor->ptr[k] = copyPoints.front();
-//        points.pop_front();
-//        copyPoints.pop_front();
-//    }
-//
-//    for(int a=0;a<3;a++){
-//        cout<<"AFTER curr  "<<curr->ptr[a]<<"and neighbor "<<neighbor->ptr[a]<<endl;
-//    }
-//
-//}
