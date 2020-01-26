@@ -5,9 +5,14 @@
 // Voronoi
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <vector>
+#include <cmath>
+#include <iostream>
+#include <list>
 #include <stack>
-#include <math.h>
+#include <vector>
+
+
+
 #include "geometric_algorithms.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,9 +38,14 @@ bool polar_comparison(Vector2D p1, Vector2D p2) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<Vector2D> graham(std::vector<Vector2D> points) {
+std::vector<Vector2D> graham(const std::vector<Vector2D> &points_) {
+    std::vector<Vector2D> points;
+    points.reserve(points_.size());
+    for (const auto& point : points_) {
+        points.push_back(point);
+    }
 
-    if (points.size() < 4) {
+    if (points_.size() < 4) {
         return points;
     }
 
@@ -44,7 +54,7 @@ std::vector<Vector2D> graham(std::vector<Vector2D> points) {
     float y_min = points[0].y;
     float y;
     int min = 0, i = 0;
-    for (auto point : points) {
+    for (const auto& point : points) {
         y = point.y;
         if ((y < y_min) || (y_min == y && point.x < point.x)) {
             y_min = point.y;
@@ -58,8 +68,9 @@ std::vector<Vector2D> graham(std::vector<Vector2D> points) {
     Vector2D origin(points[0]);
 
     std::vector<Vector2D> points_relative;
-    for (auto point : points) {
-        points_relative.push_back( Vector2D(point.x - origin.x, point.y - origin.y) );
+    points_relative.reserve(points.size());
+    for (auto &point : points) {
+        points_relative.emplace_back(point.x - origin.x, point.y - origin.y );
     }
 
     sort(points_relative.begin()+1, points_relative.end(), polar_comparison);
@@ -88,21 +99,42 @@ std::vector<Vector2D> graham(std::vector<Vector2D> points) {
         p_it++;
     }
 
-    //int N = stack.size();
-    //i = N - 1;
-    //result.resize(N+1);
-
     while (!stack.empty()) {
-        //result[i--] = *(stack.top()) + origin;
-        result.push_back(*(stack.top()) + origin);
-
+        result.insert(result.begin(), *(stack.top()) + origin);
+        //result.push_back(*(stack.top()) + origin);
         stack.pop();
     }
-    //result[N] = result[0];
 
     return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void delaunay(Mesh *mesh) {
+
+    std::list<Triangle*> processList;
+    for (auto &triangle : mesh->triangles) {
+        processList.push_back(&triangle);
+    }
+
+    while (processList.size()>1) { // while a triangle is in the list
+        Triangle *current = processList.front(); // pop current
+        processList.pop_front();
+        if (!current->isDelaunay) { // if current is not Delaunay
+            Triangle *Tneighbor = mesh->neighborInside(current);
+            if (Tneighbor != nullptr) { // and if a neighbor is available
+                mesh->flip(current, Tneighbor); // flip the common edge
+                // remove Tneighbor form the list
+                auto tr=processList.begin();
+                while (tr != processList.end() && (*tr) != Tneighbor) tr++;
+                if (tr!=processList.end()) processList.erase(tr);
+            } else {
+                processList.push_back(current); // postpone the treatment
+            }
+        }
+    }
+    if (! mesh->checkDelaunay()) {
+        delaunay(mesh);
+    }
+}
 

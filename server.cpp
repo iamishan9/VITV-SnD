@@ -5,6 +5,12 @@
 
 #include "server.h"
 
+Server::Server()
+    : position(Vector2D())
+    , name("")
+    , color("WHITE")
+{}
+
 Server::Server(Vector2D position_, string name_, string color_)
     : position(position_)
     , name(name_)

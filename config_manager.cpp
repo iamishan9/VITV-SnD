@@ -1,7 +1,7 @@
 #include "config_manager.h"
 
 vector<Server*> load_config(std::string file_path) {
-    vector<Server *> servers;
+    vector<Server*> servers;
     std::ifstream file(file_path);
     if (file.is_open()) {
         std::string line;
@@ -48,8 +48,7 @@ vector<Server*> load_config(std::string file_path) {
             std::cout << s_name << " | " << x << " | " << y << " | " << s_Color << std::endl;
 
             if (is_line_valid && s_name != "" && s_Color != "" && x != INT32_MIN && y != INT32_MIN) {
-                servers.push_back( new Server( Vector2D(x, y), s_name, s_Color ) );
-                //insert(new Server(sName, Vector2D(x,y), s_Color));
+                servers.push_back(new Server( Vector2D(x, y), s_name, s_Color ) );
             } else {
                 std::cerr << "While reading file, line " << line_number << " was rejected!" << std::endl;
             }

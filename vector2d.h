@@ -10,12 +10,13 @@ public:
     float y;
 
     Vector2D(float X, float Y);
+    Vector2D(const Vector2D &v);
 
 
     Vector2D();
 
     float length();
-    float norm();
+    float norm() const;
     Vector2D ortho();
     Vector2D unit();
 
@@ -26,8 +27,9 @@ public:
     Vector2D operator*(const float &v) const;
     float operator*(const Vector2D &op2) const;
     friend Vector2D operator*(float a, const Vector2D &v);
+    bool operator<(const Vector2D &v) const;
 
-    bool operator == (const Vector2D &v) const;
+    bool operator ==(const Vector2D &v) const;
     friend std::ostream& operator << (std::ostream &out, const Vector2D &v);
 };
 

@@ -5,21 +5,25 @@
 
 #include "color.h"
 #include "config_manager.h"
-#include "server.h"
-#include "vector2d.h"
 #include "geometric_algorithms.h"
 #include "geometry.h"
+#include "server.h"
+#include "vector2d.h"
+
 
 class MainWindow: public GlutWindow {
 public:
     const static unsigned int WINDOW_X = 1000;
     const static unsigned int WINDOW_Y = 800;
 
-
-
-    vector<Server*> servers;
-    Polygon convex_hull;
+    std::vector<Server*> servers;
     Mesh mesh;
+    Polygon convex_hull;
+
+    std::vector<Vector2D> test_pts{{280,740},{700,750},{500,700},{900,720},{50,410},{340,400},{650,390},{950,300 },
+        { 400 ,200 },{550,190},{200,50},{800,100}};
+
+    std::vector<Vector2D> points;
 
     MainWindow(const string &title, int argc, char **argv):
             GlutWindow(argc, argv, title, WINDOW_X, WINDOW_Y, FIXED) {
@@ -39,52 +43,51 @@ public:
 };
 
 void MainWindow::onStart() {
-    std::cout << "onStart: begin" << std::endl;
+    std::cout << "\nonStart: begin\n" << std::endl;
     servers = load_config(DEFAULT_CONFIG);
-
-    std::vector<Vector2D> points;
+    std::cout << "onStart: config read" << std::endl;
 
     for(auto server : servers) {
         points.push_back(server->position);
     }
 
-    std::cout << "onStart: config read" << std::endl;
+//    points.push_back(Vector2D(221, 128));
+//    points.push_back(Vector2D(141, 652));
+//    points.push_back(Vector2D(414, 406));
+//    points.push_back(Vector2D(876, 569));
+//    points.push_back(Vector2D(532, 756));
+//    points.push_back(Vector2D(690, 210));
+//
 
     // Graham
 
-    std::vector<Vector2D> test;
-    test.emplace_back(Vector2D(221, 128));
-    test.emplace_back(Vector2D(141, 652));
-    test.emplace_back(Vector2D(414, 406));
-    test.emplace_back(Vector2D(876, 569));
-    test.emplace_back(Vector2D(532, 756));
-    test.emplace_back(Vector2D(690, 210));
-
-    //convex_hull = Polygon(graham(test));
     convex_hull = Polygon(graham(points));
-
-//    for (auto v : convex_hull.vertices) {
-//        std:cout << v << endl;
-//    }
-
-//    std::cout << " Nb of sv: " << convex_hull.n_edges << endl;
 
     // Delaunay
 
     mesh = Mesh(points);
+    convex_hull = Polygon(graham(points));
 
-    for (auto triangle : mesh.triangles) {
-        std::cout << "p1: " << *(triangle.ptr[0]) << "p2: " << triangle.ptr[1] << "p3: " << triangle.ptr[2] << std::endl;
+
+
+//    convex_hull = Polygon(graham(test_pts));
+//    mesh = Mesh(test_pts);
+
+    //delaunay(&mesh);
+
+    mesh.solveDelaunay();
+
+    std::cout << "\n READ TRIANGLES: "<< std::endl;
+    for (const auto& triangle : mesh.triangles) {
+        std::cout << "p1: " << *triangle.ptr[0] << " p2: " << *triangle.ptr[1] << " p3: " << *triangle.ptr[2] << std::endl;
     }
-
-
 
     // Voronoi
 
     glClearColor(1.0,1.0,1.0,1.0);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    std::cout << "onStart: end" << std::endl;
+    std::cout << "\nonStart: end\n" << std::endl;
 }
 
 void MainWindow::onDraw() {
@@ -118,24 +121,18 @@ void MainWindow::onDraw() {
     glEnd();
     glPopMatrix();
 
-
-
-    glPushMatrix();
     convex_hull.onDraw();
-    glPopMatrix();
-
-    glPushMatrix();
     mesh.onDraw();
-    glPopMatrix();
 
     glEnable(GL_TEXTURE_2D);
     glColor3f(1.0f,1.0f,1.0f);
-    for (Server* server : servers) {
+    for (auto &server : servers) {
         glPushMatrix();
         server->onDraw();
         glPopMatrix();
     }
     glDisable(GL_TEXTURE_2D);
+
 
     //std::cout << "onDraw: end" << std::endl;
 }
@@ -148,7 +145,15 @@ void MainWindow::onReshape(int x, int y) {
 void MainWindow::onMouseDown(int button, double x, double y){}
 void MainWindow::onMouseUp(int button, double x, double y){}
 void MainWindow::onMouseDrag(double x, double y){}
-void MainWindow::onMouseMove(double x, double y){}
+
+void MainWindow::onMouseMove(double x, double y){
+    Vector2D v((float)x,(float)y);
+
+    for (auto &triangle : mesh.triangles) {
+        triangle.onMouseMove(v);
+    }
+}
+
 void MainWindow::onKeyPressed(unsigned char c, double x, double y){}
 void MainWindow::onUpdate(double dt){}
 

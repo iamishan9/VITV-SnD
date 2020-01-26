@@ -3,7 +3,7 @@
 #ifndef SERVERS_AND_DRONES_GEOMETRY_H
 #define SERVERS_AND_DRONES_GEOMETRY_H
 
-
+#include <list>
 #include <vector>
 
 #include "vector2d.h"
@@ -56,11 +56,16 @@ public:
     std::vector<Triangle> triangles;
 
     Mesh();
-    Mesh(const std::vector<Vector2D> &points);
+    Mesh(const std::vector<Vector2D> &P);
     ~Mesh();
 
+    //void init_triangles(const std::vector<Vector2D> &points);
+    Triangle* neighborInside(Triangle *triangle);
+    void flip(Triangle *current, Triangle *neighbor);
+    Vector2D* getNextPoint(Triangle *t, Vector2D *v);
+    void solveDelaunay();
+    bool checkDelaunay();
     void onDraw();
-    void add_triangle(const Triangle &triangle);
 };
 
 class Polygon {
@@ -71,8 +76,6 @@ public:
     Polygon();
     Polygon(const std::vector<Vector2D> &vertices);
     ~Polygon();
-
-    std::vector<Triangle> triangulation();
 
     void onDraw();
 };
@@ -90,15 +93,17 @@ public:
 
     Triangle();
     Triangle(Vector2D *ptr1, Vector2D *ptr2, Vector2D *ptr3);
-    void updateVertices(Vector2D *ptr1,Vector2D *ptr2,Vector2D *ptr3);
+    void updateVertices(Vector2D *ptr1, Vector2D *ptr2, Vector2D *ptr3);
     void calculateCircle();
+    bool checkDelaunay(const std::vector<Vector2D> &points);
     bool isOnTheLeft(const Vector2D *P, const Vector2D *P1, const Vector2D *P2);
-    bool isEmpty(const vector<Vector2D*> &tmp, int n);
+    bool isEmpty(const std::vector<Vector2D*> &tmp, int n);
     bool isInside(const Vector2D &P);
     void onDraw();
     void drawCircle();
     void onMouseMove(const Vector2D& pos);
     bool isInsideCircle(const Vector2D &P) const;
+    Vector2D* getUniquePoint(Triangle *t);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -16,6 +16,7 @@ public:
     int size = 48;
     GLuint id = GlutWindow::loadTGATexture("../assets/antenna.tga", size, size);
 
+    Server();
     Server(Vector2D position, std:: string name, std::string color);
     ~Server();
     void onDraw();
