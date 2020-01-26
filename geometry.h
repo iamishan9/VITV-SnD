@@ -53,11 +53,14 @@ public:
 
 class Mesh {
 public:
-    std::vector<Vector2D> vertices;
-    std::vector<Triangle> triangles;
+    vector<Vector2D> vertices;
+    vector<Triangle> triangles;
+    vector<Polygon*> vorPolygons;
 
-    std::vector<Vector2D> P;
-    std::vector<Vector2D> P_E;
+    vector<Vector2D> P;
+    vector<Vector2D> P_E;
+
+    bool vorCreated=false;
 
     Mesh();
     Mesh(const std::vector<Vector2D> &P);
@@ -68,23 +71,31 @@ public:
     void solveDelaunay();
     void onDraw();
     void onKeyPressed(unsigned char c, double x, double y);
-    void addInteriorPoints();
     void flip(Triangle* curr, Triangle* neighbor);
     Triangle* neighborInside(Triangle* currentTriangle);
     Vector2D* getNextPoint(Triangle *t, Vector2D *v);
+    Vector2D* getPrevPoint(Triangle *t, Vector2D *v);
+    Triangle rightNeighbor(Triangle &t, list<Triangle> &triangles);
     void makeVoronoi();
+    Vector2D intersectionWithBorders(Vector2D H, Vector2D u, float xx, float yy, float x, float y);
 };
 
 class Polygon {
 public:
+    int n_max;
     int n_edges;
+
+
     std::vector<Vector2D> vertices;
+    Vector2D *pPoints;
 
     Polygon();
+    Polygon(int p_max);
     Polygon(const std::vector<Vector2D> &vertices);
     ~Polygon();
 
     void onDraw();
+    void draw();
 };
 
 
@@ -110,8 +121,12 @@ public:
     void drawCircle();
     void onMouseMove(const Vector2D& pos);
     bool isInsideCircle(const Vector2D &P) const;
+//    bool operator==(const Triangle& lhs);
 
+    bool operator == (const Triangle& s) const { return ptr[0] == s.ptr[0] && ptr[1] == s.ptr[1] && ptr[2] == s.ptr[2]; }
+    bool operator != (const Triangle& s) const { return !operator==(s); }
     Vector2D* getUniquePoint(Triangle *triangle);
+    bool containsPoint(Vector2D *point);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

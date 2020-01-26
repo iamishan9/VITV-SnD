@@ -31,6 +31,10 @@ Vector2D Vector2D::ortho() {
     return Vector2D(-y,x);
 }
 
+Vector2D Vector2D::getRightOrtho(){
+    return Vector2D(y,-x);
+}
+
 Vector2D Vector2D::unit() {
     float l = length();
     return {x/l, y/l};

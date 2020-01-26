@@ -20,9 +20,10 @@ public:
     Mesh mesh;
     Polygon convex_hull;
 
-    std::vector<Vector2D> test_pts{{280,740},{700,750},{500,700},{900,720},{50,410},{340,400},{650,390},{950,300 },
-        { 400 ,200 },{550,190},{200,50},{800,100}};
-
+//    std::vector<Vector2D> test_pts{{280,740},{700,750},{500,700},{900,720},{50,410},{340,400},{650,390},{950,300 },
+//        { 400 ,200 },{550,190},{200,50},{800,100}};
+    std::vector<Vector2D> test_pts{{221,128}, {141, 652}, {414, 406}, {876, 569}, {532, 756}, {690, 210}};
+//    std::vector<Vector2D> test_pts{{221,128}, {340,400},{141, 652}};
     std::vector<Vector2D> points;
 
 
@@ -117,17 +118,10 @@ void MainWindow::onDraw() {
     glEnd();
     glPopMatrix();
 
-    convex_hull.onDraw();
+    if(!mesh.vorCreated){
+        convex_hull.onDraw();
+    }
     mesh.onDraw();
-
-//    glEnable(GL_TEXTURE_2D);
-//    glColor3f(1.0f,1.0f,1.0f);
-//    for (auto &server : servers) {
-//        glPushMatrix();
-//        server->onDraw();
-//        glPopMatrix();
-//    }
-//    glDisable(GL_TEXTURE_2D);
 
 
 
@@ -158,13 +152,13 @@ void MainWindow::onKeyPressed(unsigned char c, double x, double y){
 //    cout<<"hello"<<endl;
     switch(c) {
         case 'd':
-//            mesh.solveDelaunay();
-            mesh.checkDelaunay();
-            mesh.checkDelaunay();
+            mesh.solveDelaunay();
             mesh.checkDelaunay();
             break;
         case 'v':
-            cout<<"Voronoi not done"<<endl;
+//            cout<<"no voronoi "<<endl;
+            mesh.makeVoronoi();
+            cout<<"Size of vor polygonss"<<mesh.vorPolygons.size()<<endl;
             break;
         default:
             break;

@@ -18,6 +18,7 @@ public:
     float length();
     float norm() const;
     Vector2D ortho();
+    Vector2D getRightOrtho();
     Vector2D unit();
 
     float magnitude(Vector2D v);
