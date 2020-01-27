@@ -30,8 +30,8 @@ public:
     GLuint droneId  = 0;
     GLuint serverId = 0;
 
-    const static unsigned int windowX = 800;
-    const static unsigned int windowY = 500;
+    const static unsigned int windowX = 1000;
+    const static unsigned int windowY = 800;
 
     Vector2 mousePos       = Vector2();
     Vector2 createServerAt = Vector2();
@@ -75,8 +75,6 @@ public:
 
     float padding = 25; // The clamp padding, should be half a server width
 
-    //draw patate
-    void patate(float x, float y);
     Vector2 convert(float x, float y);
 
     /**
@@ -88,6 +86,7 @@ public:
     bool inputWindowEnabled = false;
     int tick = 0; // Used to blink the cursor ; Not to be used for anything else
 
+    Server* getClosestServerFromPoint(Vector2 p);
 
     /**
      * To be removed

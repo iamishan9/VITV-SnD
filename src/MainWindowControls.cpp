@@ -77,7 +77,7 @@ void MainWindow::onMouseMove(double x, double y) {
     mousePos = Vector2(x, y);
     if (inputWindowEnabled) return;
     for (Drone* drone : drones) {
-        drone->target = mousePos;
+        // drone->target = mousePos;
     }
 }
 

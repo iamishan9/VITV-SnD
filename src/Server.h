@@ -22,6 +22,7 @@ public:
     VPoint* vp;
 
     string color;
+    int dronesConnected = 0;
 
     /**
      * Creates a server at the pos ; Basic color of the server is blank

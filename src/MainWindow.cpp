@@ -61,22 +61,23 @@ void MainWindow::onStart() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
-void MainWindow::patate(float x, float y) {
-    glColor3f(.75, .0,.0);
-    glPushMatrix();
-    GlutWindow::fillEllipse(
-            (-1 + 2 * (x / w)) * windowX,
-            (-1 + 2 * (y / w)) * windowY,
-            10, 10,
-            60
-    );
-    glPopMatrix();
-}
 
 Vector2 MainWindow::convert(float x, float y) {
     return Vector2(
             (-1 + 2 * (x / w)) * windowX,
             (-1 + 2 * (y / w)) * windowY);
+}
+
+Server* MainWindow::getClosestServerFromPoint(Vector2 p) {
+    Server* closest = nullptr;
+    float min = 99999;
+    for (Server* serv : servers) {
+        if (serv->position.magnitude(p) < min) {
+            min = serv->position.magnitude(p);
+            closest = serv;
+        }
+    }
+    return closest;
 }
 
 void MainWindow::drawVoronoi() {
@@ -85,15 +86,10 @@ void MainWindow::drawVoronoi() {
 
         edg = v->GetEdges(ver, w, w);
 
-        /*for (auto & i : *ver) {
-            glBegin(GL_QUADS);
-            glColor3f(.75, .75,.95);
-            glVertex2f( (-1 + 2*i->x/w - 0.01) * windowX,  (-1+2*i->y/w - 0.01) * windowY);
-            glVertex2f( (-1 + 2*i->x/w + 0.01) * windowX,  (-1+2*i->y/w - 0.01) * windowY);
-            glVertex2f( (-1 + 2*i->x/w + 0.01) * windowX,  (-1+2*i->y/w + 0.01) * windowY);
-            glVertex2f( (-1 + 2*i->x/w - 0.01) * windowX,  (-1+2*i->y/w + 0.01) * windowY);
-            glEnd();
-        }*/
+        Server* closestToTopRight = getClosestServerFromPoint(Vector2(windowX, windowY));
+        Server* closestToTopLeft = getClosestServerFromPoint(Vector2(0, windowY));
+        Server* closestToBottomLeft = getClosestServerFromPoint(Vector2(0, 0));
+        Server* closestToBottomRight = getClosestServerFromPoint(Vector2(windowX, 0));
 
         if (true) {
             VPoint *serverPlace;
@@ -102,10 +98,8 @@ void MainWindow::drawVoronoi() {
                 serverPlace = i;
                 for (Server *s : servers) {
                     if (s->vp->isEqual(*i)) {
-                        cout << s->name << endl;
+                        //cout << s->name << endl;
                         monServeur = s;
-
-
                         vector<Vector2> serverPolygonPoints;
                         for (auto &i : *edg) {
                             if (i->left == serverPlace) {
@@ -115,8 +109,6 @@ void MainWindow::drawVoronoi() {
                                 serverPolygonPoints.push_back(
                                         convert(i->end->x, i->end->y)
                                 );
-                                //patate(i->start->x, i->start->y);
-                                //patate(i->end->x, i->end->y);
                             }
                             if (i->right == serverPlace) {
                                 serverPolygonPoints.push_back(
@@ -125,9 +117,23 @@ void MainWindow::drawVoronoi() {
                                 serverPolygonPoints.push_back(
                                         convert(i->end->x, i->end->y)
                                 );
-                                //patate(i->start->x, i->start->y);
-                                //patate(i->end->x, i->end->y);
                             }
+                        }
+
+                        if (s == closestToTopRight) {
+                            serverPolygonPoints.push_back(Vector2(windowX, windowY));
+                        }
+
+                        if (s == closestToTopLeft) {
+                            serverPolygonPoints.push_back(Vector2(0, windowY));
+                        }
+
+                        if (s == closestToBottomLeft) {
+                            serverPolygonPoints.push_back(Vector2(0, 0));
+                        }
+
+                        if (s == closestToBottomRight) {
+                            serverPolygonPoints.push_back(Vector2(windowX, 0));
                         }
 
                         auto color = Colors::getColorByString(monServeur->color);
@@ -257,6 +263,19 @@ void MainWindow::onUpdate(double dt) {
     float min;
     float current;
     Server* closest;
+
+    for (Server* server : servers) {
+        server->dronesConnected = 0;
+    }
+    for (Drone* drone : drones) {
+        if (drone->server) {
+            drone->server->dronesConnected++;
+        }
+    }
+
+    double desiredAmountOfDronesPerServer = 1.0 * drones.size() / (servers.size() + .00001);
+    //cout << (desiredAmountOfDronesPerServer) << endl;
+
     for (Drone* drone : drones) {
 
         // Update the drones positions
@@ -267,11 +286,16 @@ void MainWindow::onUpdate(double dt) {
         for (Server* server : servers) {
             current = drone->position.magnitude(server->position);
             if (current < min) {
-                min = current;
-                closest = server;
+                if ((server->dronesConnected * 1.0) <= desiredAmountOfDronesPerServer) {
+                    min = current;
+                    closest = server;
+                }
             }
         }
-        drone->server = closest;
+        if (closest) {
+            drone->server = closest;
+            drone->target = closest->position;
+        }
     }
 
     // Compute the collisions
