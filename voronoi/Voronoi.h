@@ -50,7 +50,7 @@ namespace vor
 
 		Edges *			GetEdges(Vertices * v, int w, int h);
 
-	private:
+	public:
 
 		/*
 						places		: container of places with which we work

@@ -75,6 +75,10 @@ public:
 
     float padding = 25; // The clamp padding, should be half a server width
 
+    //draw patate
+    void patate(float x, float y);
+    Vector2 convert(float x, float y);
+
     /**
      * Render the input window
      */

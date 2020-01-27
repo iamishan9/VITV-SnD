@@ -74,6 +74,7 @@ void	Voronoi::InsertParabola(VPoint * p)
 		if(p->x > fp->x) root->edge = new VEdge(s, fp, p); // rozhodnu, kter� vlevo, kter� vpravo
 		else root->edge = new VEdge(s, p, fp);
 		edges->push_back(root->edge);
+		s->AddSommet(new VPoint(p->x, p->y));//
 		return;
 	}
 
@@ -86,6 +87,7 @@ void	Voronoi::InsertParabola(VPoint * p)
 	}
 	
 	VPoint * start = new VPoint(p->x, GetY(par->site, p->x));
+    start->AddSommet(new VPoint(p->x, p->y));//
 	points.push_back(start);
 
 	VEdge * el = new VEdge(start, par->site, p);

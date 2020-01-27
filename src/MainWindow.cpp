@@ -4,7 +4,7 @@
 #include <climits>
 #include "MainWindow.h"
 #include "HelperFile.h"
-
+#include "Colors.h"
 
 float MainWindow::cx(float v) {
     return 5000 + ((v / windowX) * 5000);
@@ -61,6 +61,23 @@ void MainWindow::onStart() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
+void MainWindow::patate(float x, float y) {
+    glColor3f(.75, .0,.0);
+    glPushMatrix();
+    GlutWindow::fillEllipse(
+            (-1 + 2 * (x / w)) * windowX,
+            (-1 + 2 * (y / w)) * windowY,
+            10, 10,
+            60
+    );
+    glPopMatrix();
+}
+
+Vector2 MainWindow::convert(float x, float y) {
+    return Vector2(
+            (-1 + 2 * (x / w)) * windowX,
+            (-1 + 2 * (y / w)) * windowY);
+}
 
 void MainWindow::drawVoronoi() {
 
@@ -78,23 +95,84 @@ void MainWindow::drawVoronoi() {
             glEnd();
         }*/
 
-        for (auto & i : *edg) {
-            glBegin(GL_LINES);
-            glColor3f(.75, .75,.95);
-            line(
-                    (-1 + 2 * (i->start->x / w)) * windowX,
-                    (-1 + 2 * (i->start->y / w)) * windowY,
-                    (-1 + 2 * (i->end->x / w)) * windowX,
-                    (-1 + 2 * (i->end->y / w)) * windowY
-            );
-            glEnd();
+        if (true) {
+            VPoint *serverPlace;
+            Server *monServeur;
+            for (auto i : *ver) {
+                serverPlace = i;
+                for (Server *s : servers) {
+                    if (s->vp->isEqual(*i)) {
+                        cout << s->name << endl;
+                        monServeur = s;
+
+
+                        vector<Vector2> serverPolygonPoints;
+                        for (auto &i : *edg) {
+                            if (i->left == serverPlace) {
+                                serverPolygonPoints.push_back(
+                                        convert(i->start->x, i->start->y)
+                                );
+                                serverPolygonPoints.push_back(
+                                        convert(i->end->x, i->end->y)
+                                );
+                                //patate(i->start->x, i->start->y);
+                                //patate(i->end->x, i->end->y);
+                            }
+                            if (i->right == serverPlace) {
+                                serverPolygonPoints.push_back(
+                                        convert(i->start->x, i->start->y)
+                                );
+                                serverPolygonPoints.push_back(
+                                        convert(i->end->x, i->end->y)
+                                );
+                                //patate(i->start->x, i->start->y);
+                                //patate(i->end->x, i->end->y);
+                            }
+                        }
+
+                        auto color = Colors::getColorByString(monServeur->color);
+                        glColor3f(color[0] / 255.0, color[1] / 255.0, color[2] / 255.0);
+                        for (int i = 0; i < serverPolygonPoints.size(); i++) {
+                            for (int j = 0; j < serverPolygonPoints.size(); j++) {
+                                for (int k = 0; k < serverPolygonPoints.size(); k++) {
+                                    glBegin(GL_TRIANGLES);
+                                    glVertex2f(
+                                            serverPolygonPoints[i].x,
+                                            serverPolygonPoints[i].y
+                                    );
+                                    glVertex2f(
+                                            serverPolygonPoints[j].x,
+                                            serverPolygonPoints[j].y
+                                    );
+                                    glVertex2f(
+                                            serverPolygonPoints[k].x,
+                                            serverPolygonPoints[k].y
+                                    );
+                                    glEnd();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    for (auto & i : *edg) {
+        glBegin(GL_LINES);
+        glColor3f(0, 0,0);
+        line(
+                (-1 + 2 * (i->start->x / w)) * windowX,
+                (-1 + 2 * (i->start->y / w)) * windowY,
+                (-1 + 2 * (i->end->x / w)) * windowX,
+                (-1 + 2 * (i->end->y / w)) * windowY
+        );
+        glEnd();
     }
 
     glColor3f(0, 0,0);
     drawText(10, 10, "Vertices: " + to_string(ver->size()));
     drawText(10, 45, "Edges: " + to_string(edg->size()));
-
 }
 
 void MainWindow::onDraw() {
