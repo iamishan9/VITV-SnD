@@ -20,8 +20,6 @@ class Triangle;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
 class Matrix22 {
 public:
     float m[2][2];
@@ -47,7 +45,6 @@ public:
     float determinant();
 };
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Mesh {
@@ -60,13 +57,23 @@ public:
     ~Mesh();
 
     //void init_triangles(const std::vector<Vector2D> &points);
+
     Triangle* neighborInside(Triangle *triangle);
     void flip(Triangle *current, Triangle *neighbor);
-    Vector2D* getNextPoint(Triangle *t, Vector2D *v);
+
     void solveDelaunay();
     bool checkDelaunay();
+
+    Vector2D* getNextPoint(Triangle *t, const Vector2D *v) const;
+    Vector2D* getPrevPoint(Triangle *t, const Vector2D *v) const;
+    Triangle rightNeighbor(Triangle &t, std::list<Triangle> &triangles) const;
+    void solveVoronoi();
+    Vector2D intersectionWithBorders(Vector2D H, Vector2D u, float xx, float yy, float x, float y) const;
+
     void onDraw();
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Polygon {
 public:
@@ -74,10 +81,20 @@ public:
     std::vector<Vector2D> vertices;
 
     Polygon();
+    Polygon(const Polygon &polygon);
+    Polygon(Polygon &polygon);
     Polygon(const std::vector<Vector2D> &vertices);
+
     ~Polygon();
 
+    Polygon& operator=(const Polygon& other);
+
+    void addPoint(const Vector2D &point);
+    void addCornerPoints();
+    void addCornerPoints(float w, float h);
+
     void onDraw();
+    void onDraw(const float *color);
 };
 
 
@@ -104,14 +121,12 @@ public:
     void onMouseMove(const Vector2D& pos);
     bool isInsideCircle(const Vector2D &P) const;
     Vector2D* getUniquePoint(Triangle *t);
+    bool containsPoint(const Vector2D *point) const;
+    friend std::ostream& operator << (std::ostream &out, const Triangle &triangle);
+    bool operator == (const Triangle& s) const;
+    bool operator != (const Triangle& s) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/* // TODO put Vector2D here!
-class Vector2D {
-
-};
-*/
 
 #endif //SERVERS_AND_DRONES_GEOMETRY_H

@@ -9,14 +9,25 @@ Vector2D::Vector2D(float X, float Y) {
     this->y = Y;
 }
 
-Vector2D::Vector2D(const Vector2D &v) {
-    x = v.x;
-    y = v.y;
+Vector2D::Vector2D(const Vector2D &other) {
+    x = other.x;
+    y = other.y;
+}
+
+Vector2D::Vector2D(Vector2D &other) {
+    x = other.x;
+    y = other.y;
 }
 
 Vector2D::Vector2D() {
     this->x = 0;
     this->y = 0;
+}
+
+Vector2D& Vector2D::operator=(const Vector2D& other) {
+    x = other.x;
+    y = other.y;
+    return *this;
 }
 
 float Vector2D::length() {
@@ -29,6 +40,10 @@ float Vector2D::norm() const {
 
 Vector2D Vector2D::ortho() {
     return Vector2D(-y,x);
+}
+
+Vector2D Vector2D::getRightOrtho(){
+    return Vector2D(y,-x);
 }
 
 Vector2D Vector2D::unit() {
@@ -77,6 +92,8 @@ bool Vector2D::operator<(const Vector2D &v) const {
 //
 //    return a1 < a2;
 }
+
+
 
 std::ostream& operator << (std::ostream &out, const Vector2D &v) {
     out << "(" << v.x<< ", " << v.y<< ")";

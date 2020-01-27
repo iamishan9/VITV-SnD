@@ -138,3 +138,108 @@ void delaunay(Mesh *mesh) {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+std::vector<Polygon> voronoi(const Mesh &mesh) { // Delaunay mesh
+    std::vector<Polygon> polygons; // Contains Voronoi polygons
+    Polygon polygon; // Voronoi polygon
+
+    for(const auto& Qi: mesh.vertices){
+
+        std::list<Triangle> T; //subset of triangles ti(a,b,c) where Qi E (a,b,c)
+        Vector2D nextVertex;
+        Vector2D prevVertex;
+        bool isNextFound, isPrevFound;
+        bool isOpened = false;
+        Triangle t;
+
+        Vector2D Q;
+        Vector2D E, H, u;
+
+        polygon = Polygon();
+
+        for (const auto& triangle: mesh.triangles){
+            // if a triangle contains the point Qi, add it to subset T
+            if (triangle.containsPoint(&Qi)){
+                T.push_back(triangle);
+            }
+        }
+
+        for(auto& triangle: T){
+            Vector2D *nextPoint = mesh.getNextPoint(&triangle, &Qi);
+            isNextFound = false;
+
+            for(auto& t: T){
+                if(&t != &triangle && t.containsPoint(nextPoint)){
+                    isNextFound = true;
+                    break;
+                }
+            }
+
+            if (!isNextFound){
+                t = triangle;
+                nextVertex = *nextPoint;
+                isOpened = true;
+            }
+        }
+
+        for(auto& triangle: T){
+            Vector2D *prevPoint = mesh.getPrevPoint(&triangle, &Qi);
+            isPrevFound = false;
+
+            for(auto& t: T){
+                if(&t != &triangle && t.containsPoint(prevPoint)){
+                    isPrevFound = true;
+                    break;
+                }
+            }
+
+            if (!isPrevFound){
+                prevVertex = *prevPoint;
+                isOpened = true;
+            }
+        }
+
+        if (isOpened) {
+            E = nextVertex;
+            H = (Qi + E) * 0.5f;
+            u = (E - Qi).getRightOrtho();
+            Q = mesh.intersectionWithBorders(H, u, 0, 0, 1000, 800);
+            std::cout << "value of Q = " << Q.x << "|" << Q.y << std::endl;
+            polygon.addPoint(Q);
+        }
+        else {
+            t = T.front();
+        }
+
+        while (T.size() > 1) {
+            polygon.addPoint(t.circumCenter);
+            Triangle prevTriangle = t;
+            t = mesh.rightNeighbor(t, T);
+            T.remove(prevTriangle);
+        }
+
+        polygon.addPoint(t.circumCenter);
+
+        if (isOpened) {
+            E = prevVertex;
+            H = (E + Qi) * 0.5f;
+            u = (Qi - E).getRightOrtho();
+            Q = mesh.intersectionWithBorders(H, u, 0, 0, 1000, 800);
+            std::cout<<"val of Q again "<< Q.x << " | " << Q.y << std::endl;
+
+            polygon.addPoint(Q);
+        }
+
+        T.remove(t);
+
+        if (isOpened) {
+            polygon.addCornerPoints();
+
+        }
+
+        polygons.push_back(polygon);
+    }
+
+    return polygons;
+}

@@ -7,7 +7,7 @@ vector<Server*> load_config(std::string file_path) {
         std::string line;
         size_t pos = 0;
 
-        std::string s_name, s_Vector2D, s_Color, s_x, s_y;
+        std::string s_name, s_Vector2D, s_color, s_x, s_y;
         int x = INT32_MIN, y = INT32_MIN;
 
         int line_number = 0;
@@ -24,7 +24,7 @@ vector<Server*> load_config(std::string file_path) {
             pos = 0;
             s_name = "";
             s_Vector2D = "";
-            s_Color = "";
+            s_color = "";
 
             pos = line.find(delim);
             s_name = line.substr(0, pos);
@@ -34,8 +34,8 @@ vector<Server*> load_config(std::string file_path) {
             s_Vector2D = line.substr(0, pos);
             line.erase(0, pos + delim.length());
 
-            //s_Color = line.substr(0, line.length() - 1); // TODO if windows csv file: line.length() - 1 (\r\n)
-            s_Color = line.substr(0, line.length());
+            //s_color = line.substr(0, line.length() - 1); // TODO if windows csv file: line.length() - 1 (\r\n)
+            s_color = line.substr(0, line.length());
 
 
             std::istringstream iss(s_Vector2D);
@@ -45,10 +45,10 @@ vector<Server*> load_config(std::string file_path) {
             iss >> y; // get y
             ((iss.get() == ')') ? is_line_valid = true : is_line_valid = false); // remove ')'
 
-            std::cout << s_name << " | " << x << " | " << y << " | " << s_Color << std::endl;
+            std::cout << s_name << " | " << x << " | " << y << " | " << s_color << std::endl;
 
-            if (is_line_valid && s_name != "" && s_Color != "" && x != INT32_MIN && y != INT32_MIN) {
-                servers.push_back(new Server( Vector2D(x, y), s_name, s_Color ) );
+            if (is_line_valid && s_name != "" && s_color != "" && x != INT32_MIN && y != INT32_MIN) {
+                servers.push_back(new Server(Vector2D(x, y), s_name, s_color ) );
             } else {
                 std::cerr << "While reading file, line " << line_number << " was rejected!" << std::endl;
             }

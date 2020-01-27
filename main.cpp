@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "glutWindow.h"
-
 #include "color.h"
 #include "config_manager.h"
 #include "geometric_algorithms.h"
@@ -19,9 +18,8 @@ public:
     std::vector<Server*> servers;
     Mesh mesh;
     Polygon convex_hull;
-
-    std::vector<Vector2D> test_pts{{280,740},{700,750},{500,700},{900,720},{50,410},{340,400},{650,390},{950,300 },
-        { 400 ,200 },{550,190},{200,50},{800,100}};
+    Server *server;
+    std::vector<Polygon> voronoi_polygons;
 
     std::vector<Vector2D> points;
 
@@ -44,20 +42,13 @@ public:
 
 void MainWindow::onStart() {
     std::cout << "\nonStart: begin\n" << std::endl;
-    servers = load_config(DEFAULT_CONFIG);
-    std::cout << "onStart: config read" << std::endl;
+    //servers = load_config(DEFAULT_CONFIG);
+    servers = load_config("../config/config_1.csv");
 
-    for(auto server : servers) {
+
+    for(auto &server : servers) {
         points.push_back(server->position);
     }
-
-//    points.push_back(Vector2D(221, 128));
-//    points.push_back(Vector2D(141, 652));
-//    points.push_back(Vector2D(414, 406));
-//    points.push_back(Vector2D(876, 569));
-//    points.push_back(Vector2D(532, 756));
-//    points.push_back(Vector2D(690, 210));
-//
 
     // Graham
 
@@ -65,24 +56,26 @@ void MainWindow::onStart() {
 
     // Delaunay
 
-    mesh = Mesh(points);
-    convex_hull = Polygon(graham(points));
+    mesh = Mesh(points); // mesh initialization with server position
 
-
-
-//    convex_hull = Polygon(graham(test_pts));
-//    mesh = Mesh(test_pts);
-
-    //delaunay(&mesh);
-
-    mesh.solveDelaunay();
-
-    std::cout << "\n READ TRIANGLES: "<< std::endl;
-    for (const auto& triangle : mesh.triangles) {
-        std::cout << "p1: " << *triangle.ptr[0] << " p2: " << *triangle.ptr[1] << " p3: " << *triangle.ptr[2] << std::endl;
-    }
+    delaunay(&mesh);   // OR // mesh.solveDelaunay();
 
     // Voronoi
+
+    voronoi_polygons = voronoi(mesh);
+
+
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    // SOME TESTS
+
+//    server = new Server(Vector2D(400,400), "HELLO", "GREEN");
+//    server->field = Polygon(convex_hull);
+
+
+    //////////////////////////////////////////////////////////////////////////////
+
 
     glClearColor(1.0,1.0,1.0,1.0);
     glEnable(GL_BLEND);
@@ -121,21 +114,28 @@ void MainWindow::onDraw() {
     glEnd();
     glPopMatrix();
 
-    convex_hull.onDraw();
-    mesh.onDraw();
+    //convex_hull.onDraw();
+    //convex_hull.onDraw(PURPLE);
+    //mesh.onDraw();
 
-    glEnable(GL_TEXTURE_2D);
-    glColor3f(1.0f,1.0f,1.0f);
-    for (auto &server : servers) {
-        glPushMatrix();
-        server->onDraw();
-        glPopMatrix();
+    //server->onDraw();
+
+    for (auto &polygon : voronoi_polygons) {
+        polygon.onDraw();
     }
-    glDisable(GL_TEXTURE_2D);
 
 
-    //std::cout << "onDraw: end" << std::endl;
-}
+    glColor3f(1.0f,1.0f,1.0f);
+
+    for (const auto &server : servers) {
+        server->onDraw();
+    }
+
+//    for (const auto &drone : drones) {
+//        drone->onDraw();
+//    }
+
+} // end MainWindow::onDraw()
 
 void MainWindow::onReshape(int x, int y) {
     // Locks screen dimensions

@@ -6,22 +6,30 @@
 #include "glutWindow.h"
 
 #include "vector2d.h"
+#include "geometry.h"
+
+
 
 class Server {
 public:
     Vector2D position;
-    string name;
-    string color;
+    std::string name;
+    std::string color;
+    Polygon field;
 
     int size = 48;
     GLuint id = GlutWindow::loadTGATexture("../assets/antenna.tga", size, size);
 
     Server();
-    Server(Vector2D position, std:: string name, std::string color);
+    //Server(const Server &other);
+    Server(Vector2D position, std::string name, std::string color);
     ~Server();
+
+    //Server& operator=(const Server &other);
+
     void onDraw();
-    //static void load_texture();
-    friend std::ostream& operator << (std::ostream &out, const Server &s);
+    //void initField();
+    friend std::ostream& operator<<(std::ostream &out, const Server &s);
 };
 
 

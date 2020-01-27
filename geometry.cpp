@@ -7,14 +7,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 #include "glutWindow.h"
 #include "geometry.h"
 #include "color.h"
 #include "geometric_algorithms.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 void Matrix22::get2x2From3x3(const Matrix33 &mat33,int shadowLin, int shadowCol) {
     int l=0;
@@ -84,7 +82,12 @@ Mesh::Mesh() {
 }
 
 Mesh::Mesh(const std::vector<Vector2D> &points) {
-
+    if (points.size() < 3) { // not enough point to init a triangle
+        for (const auto &point : points) {
+            vertices.push_back(point);
+        }
+        triangles = std::vector<Triangle>();
+    }
     //    Let P = {P 0 , ..., P N −1 } be a set of points of R 2 . Using previous tools, we want to propose an
     //    complete algorithm which allows to construct Delaunay mesh linking every points.
 
@@ -93,7 +96,6 @@ Mesh::Mesh(const std::vector<Vector2D> &points) {
     for (const auto &point : points) {
         vertices.push_back(point);
         P.push_back(point);
-        //P.insert(P.begin(), point);
     }
 
     //    Our algorithm will follow the steps:
@@ -107,22 +109,16 @@ Mesh::Mesh(const std::vector<Vector2D> &points) {
     int m = E.size();
     Vector2D *ptr[3];
     for (int i = 1; i < m-1; i++) {
-        //std::cout << "p1: " << E[0] << " p2: " << E[i] << " p3: " << E[i+1] << std::endl;
         ptr[0] = new Vector2D(E[0]);
         ptr[1] = new Vector2D(E[i]);
         ptr[2] = new Vector2D(E[i+1]);
-        //triangles.push_back( Triangle(ptr[0], ptr[1], ptr[2]) );
         triangles.emplace_back(ptr[0], ptr[1], ptr[2] );
     }
-
-    std::cout << "nb triangles: " << triangles.size() << std::endl;
-    std::cout << "m: " << m << std::endl;
 
     //  (b) Second step: Add interior points (P − E), in replacing the every triangles T (A, B, C)
     //  that contains a point P i by the three triangles (A, B, P i ), (B, C, P i ) and (C, A, P i ).
     //  (c) Repeat (2) while there exists interior points.
     //   3. Apply the algorithm of Triangulation of Delaunay
-
 
     std::vector<Vector2D> P_E;
     std::sort(P.begin(), P.end());
@@ -130,21 +126,18 @@ Mesh::Mesh(const std::vector<Vector2D> &points) {
     std::set_difference(P.begin(), P.end(), E_tmp.begin(), E_tmp.end(),
                         std::inserter(P_E, P_E.begin()));
 
-
-    //P_E.resize(P.size() - E.size());
-
-    std::cout << "All points:" << std::endl;
-    for (auto p : P) {
-        std::cout << p << "  ";
-    }
-    std::cout << "\nConvex hull points:" << std::endl;
-    for (auto p : E) {
-        std::cout << p << "  ";
-    }
-    std::cout << "\nInterior points:" << std::endl;
-    for (auto p : P_E) {
-        std::cout << p << "  ";
-    }
+//    std::cout << "All points:" << std::endl;
+//    for (auto p : P) {
+//        std::cout << p << "  ";
+//    }
+//    std::cout << "\nConvex hull points:" << std::endl;
+//    for (auto p : E) {
+//        std::cout << p << "  ";
+//    }
+//    std::cout << "\nInterior points:" << std::endl;
+//    for (auto p : P_E) {
+//        std::cout << p << "  ";
+//    }
 
     // (2) replacing the every triangles T (A, B, C)
     //  that contains a point P i by the three triangles (A, B, P i ), (B, C, P i ) and (C, A, P i ).
@@ -154,7 +147,6 @@ Mesh::Mesh(const std::vector<Vector2D> &points) {
         for (auto &point : P_E) {
             for (auto &triangle : triangles) {
                 if (triangle.isInside(point)) {
-                    std::cout << "Point " << point << " is inside T" << std::endl;
                     ptr[0] = new Vector2D(*triangle.ptr[0]);
                     ptr[1] = new Vector2D(*triangle.ptr[1]);
                     ptr[2] = new Vector2D(*triangle.ptr[2]);
@@ -166,12 +158,10 @@ Mesh::Mesh(const std::vector<Vector2D> &points) {
             }
         }
     }
-
-    std::cout << "\nTriangles generated:" << std::endl;
-    for (const auto& triangle : triangles) {
-        std::cout << "p1: " << *triangle.ptr[0] << " p2: " << *triangle.ptr[1] << " p3: " << *triangle.ptr[2] << std::endl;
-    }
-
+//    std::cout << "\nTriangles generated:" << std::endl;
+//    for (const auto& triangle : triangles) {
+//        std::cout << triangle << std::endl;
+//    }
     checkDelaunay();
 }
 
@@ -202,82 +192,16 @@ Triangle* Mesh::neighborInside(Triangle* current) {
     return nullptr;
 }
 
-//void Mesh::flip(Triangle *current, Triangle *neighbor) {
-//    // ABC -> APC   // if AB shared edge
-//    // ABP -> CBP
-//
-//    // ABC -> ABP   // if BC shared edge
-//    // PBC -> PAC
-//
-//    // CAB -> PAB   // if CA shared edge
-//    // CAP -> CBP
-//
-////    if ( (*current->ptr[0] == *neighbor->ptr[0] && *current->ptr[1] == *neighbor->ptr[1])
-////        || (*current->ptr[1] == *neighbor->ptr[0] && *current->ptr[0] == *neighbor->ptr[1])
-////        || (*current->ptr[0] == *neighbor->ptr[1] && *current->ptr[1] == *neighbor->ptr[0])) { // AB shared edge // 0-1
-////        current->ptr[1] = new Vector2D(*neighbor->ptr[2]);
-////        neighbor->ptr[0] = new Vector2D(*current->ptr[2]);
-////
-////    }
-////    if ((*current->ptr[1] == *neighbor->ptr[1] && *current->ptr[2] == *neighbor->ptr[2])
-////        || (*current->ptr[1] == *neighbor->ptr[2] && *current->ptr[2] == *neighbor->ptr[1])
-////        || (*current->ptr[2] == *neighbor->ptr[1] && *current->ptr[1] == *neighbor->ptr[2])) { // BC shared edge // 1-2
-////        current->ptr[2] = new Vector2D(*neighbor->ptr[1]);
-////        neighbor->ptr[1] = new Vector2D(*current->ptr[0]);
-////    }
-////    if ((*current->ptr[0] == *neighbor->ptr[0] && *current->ptr[2] == *neighbor->ptr[2])
-////        || (*current->ptr[0] == *neighbor->ptr[2] && *current->ptr[2] == *neighbor->ptr[0])
-////        || (*current->ptr[2] == *neighbor->ptr[0] && *current->ptr[0] == *neighbor->ptr[2])){ // CA shared edge // 0-2
-////        current->ptr[2] = new Vector2D(*neighbor->ptr[2]);
-////        neighbor->ptr[0] = new Vector2D(*current->ptr[1]);
-////    }
-//    if (*current->ptr[0] == *neighbor->ptr[0] && *current->ptr[2] == *neighbor->ptr[1]) {
-//        current->ptr[2] = new Vector2D(*neighbor->ptr[2]);
-//        neighbor->ptr[0] = new Vector2D(*current->ptr[1]);
-//    }
-//}
-
 void Mesh::flip(Triangle* curr, Triangle* neighbor) {
-
-
     Vector2D *PC = curr->getUniquePoint(neighbor);
     Vector2D *PN = neighbor->getUniquePoint(curr);
 
     Vector2D *PCN = getNextPoint(curr, PC);
     Vector2D *PNN = getNextPoint(neighbor, PN);
 
-
     curr->updateVertices(PC,PCN,PN);
     neighbor->updateVertices(PN,PNN,PC);
 }
-
-Vector2D* Mesh::getNextPoint(Triangle *t, Vector2D *v){
-    for(int i=0; i<3; i++) {
-        if(t->ptr[i]->x == v->x && t->ptr[i]->y == v->y){
-            i++;
-            if (i > 2 )
-                return t->ptr[0];
-            else
-                return (t->ptr[i]);
-        }
-    }
-}
-
-
-
-//Mesh::Mesh(const std::vector<Vector2D> &points) {
-//    for (auto point : points) {
-//        vertices.push_back(point);
-//    }
-//    init_triangles(vertices);
-//}
-
-//void Mesh::init_triangles(const std::vector<Vector2D> &points) {
-//
-//    if (points.size() < 3) {
-//        // Can't init
-//    }
-//}
 
 bool Mesh::checkDelaunay() {
     bool isDelaunay = true;
@@ -319,12 +243,140 @@ void Mesh::onDraw() {
 
 }
 
+Vector2D* Mesh::getNextPoint(Triangle *t, const Vector2D *v) const{
+    for(int i=0; i<3; i++) {
+        if(t->ptr[i]->x == v->x && t->ptr[i]->y == v->y){
+            i++;
+            if (i > 2 )
+                return t->ptr[0];
+            else
+                return (t->ptr[i]);
+        }
+    }
+}
+
+Vector2D* Mesh::getPrevPoint(Triangle *t, const Vector2D *v) const{
+    for(int i=0; i<3; i++) {
+        if(t->ptr[i]->x == v->x && t->ptr[i]->y == v->y){
+            i--;
+            if (i == -1 )
+                return t->ptr[2];
+            else
+                return (t->ptr[i]);
+        }
+    }
+}
+
+
+//void addPoint(const Vector2D &p, Polygon *Pgn){
+//    if(Pgn->n_edges != Pgn->vertices){
+//        Pgn->vertices[(Pgn->n_edges)++] = p;
+//        Pgn->vertices[Pgn->n_edges] = Pgn->vertices[0];
+//    }
+//}
+
+
+Triangle Mesh::rightNeighbor(Triangle &t, list<Triangle> &triangles) const{
+    vector<Vector2D *> ptrs = { t.ptr[0], t.ptr[1], t.ptr[2] };
+
+    for(auto triangle: triangles){
+        if(triangle != t){
+            int matchCount = 0;
+            for (int i = 0; i < 3; i++) {
+                if (t.ptr[0]->x == triangle.ptr[i]->x && t.ptr[0]->y == triangle.ptr[i]->y)
+                    matchCount++;
+                if (t.ptr[1]->x == triangle.ptr[i]->x && t.ptr[1]->y == triangle.ptr[i]->y)
+                    matchCount++;
+                if (t.ptr[2]->x == triangle.ptr[i]->x && t.ptr[2]->y == triangle.ptr[i]->y)
+                    matchCount++;
+            }
+
+            if(matchCount > 1)
+                return triangle;
+        }
+    }
+}
+
+//void addCornerPoints(Polygon *Pgn, float w, float h){
+//    for(int i=0; i < Pgn->n_edges; i++){
+//        int nextIndex = i + 1;
+//        if(nextIndex == Pgn->n_edges)
+//            nextIndex = 0;
+//
+//        if ((Pgn->vertices[i].x == 0 && Pgn->vertices[nextIndex].y == 0) ||
+//            (Pgn->vertices[nextIndex].x == 0 && Pgn->vertices[i].y == 0))
+//            //addPoint(Vector2D(0,0), Pgn);
+//            Pgn->vertices.push_back(Vector2D(0,0));
+//
+//        else if ((Pgn->vertices[i].x == w && Pgn->vertices[nextIndex].y == 0) ||
+//                 (Pgn->vertices[nextIndex].x == w && Pgn->vertices[i].y == 0))
+//            //addPoint(Vector2D(w,0), Pgn);
+//            Pgn->vertices.push_back(Vector2D(w,0));
+//
+//        else if ((Pgn->vertices[i].x == 0 && Pgn->vertices[nextIndex].y == h) ||
+//                 (Pgn->vertices[nextIndex].x == 0 && Pgn->vertices[i].y == h))
+//            //addPoint(Vector2D(0,h), Pgn);
+//            Pgn->vertices.push_back(Vector2D(0,h));
+//
+//        else if ((Pgn->vertices[i].x == w && Pgn->vertices[nextIndex].y == h) ||
+//                 (Pgn->vertices[nextIndex].x == w && Pgn->vertices[i].y == h))
+//            //addPoint(Vector2D(w,h), Pgn);
+//            Pgn->vertices.push_back(Vector2D(w,h));
+//
+//    }
+//}
+
+void Mesh::solveVoronoi() {
+    voronoi(*this);
+}
+
+
+
+Vector2D Mesh::intersectionWithBorders(Vector2D H, Vector2D u, float x, float y, float w, float h) const{
+    float k0, k1, k2, k3;
+    k0 = (x - H.x) / u.x;
+    k1 = (w - H.x) / u.x;
+    k2 = (y - H.y) / u.y;
+    k3 = (h - H.y) / u.y;
+
+    std::vector<float> listOfK = {k0,k1,k2,k3};
+    float min = *max_element(listOfK.begin(), listOfK.end());
+
+    for (auto& k: listOfK) {
+        if(k > 0 && k < min)
+            min = k;
+    }
+
+    Vector2D P = H + (min * u);
+
+    return P;
+}
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Polygon::Polygon()
     : n_edges(0)
 {
     vertices = std::vector<Vector2D>();
+}
+
+Polygon::Polygon(const Polygon &polygon)
+    : n_edges(polygon.n_edges)
+{
+    for (const auto &vertex : polygon.vertices) {
+        vertices.push_back(vertex);
+    }
+}
+
+Polygon::Polygon(Polygon &polygon)
+        : n_edges(polygon.n_edges)
+{
+    for (auto &vertex : polygon.vertices) {
+        vertices.push_back(vertex);
+    }
 }
 
 Polygon::Polygon(const std::vector<Vector2D> &vertices_) {
@@ -339,30 +391,120 @@ Polygon::~Polygon() {
     vertices.clear();
 }
 
+Polygon& Polygon::operator=(const Polygon& other) {
+     n_edges = other.n_edges;
+     for (const auto &vertex : other.vertices) {
+         vertices.push_back(vertex);
+     }
+    return *this;
+}
+
+void Polygon::addPoint(const Vector2D &point) {
+    vertices.push_back(point);
+    n_edges = vertices.size();
+}
+
+void Polygon::addCornerPoints() {
+    float h = 800.0f, w = 1000.0f; // TODO replace by WINDOW_X WINDOW_Y
+
+    for (int i = 0, next_i = 0; i < n_edges; ++i) {
+        next_i = ++i;
+        if (next_i == n_edges) {
+            next_i = 0;
+        }
+        if ((vertices[i].x == 0 && vertices[next_i].y == 0) || (vertices[next_i].x == 0 && vertices[i].y == 0)) {
+            addPoint(Vector2D(0, 0));
+        }
+        else if ((vertices[i].x == w && vertices[next_i].y == 0) || (vertices[next_i].x == w && vertices[i].y == 0)) {
+            addPoint(Vector2D(w, 0));
+        }
+        else if ((vertices[i].x == 0 && vertices[next_i].y == h) || (vertices[next_i].x == 0 && vertices[i].y == h)) {
+            addPoint(Vector2D(0, h));
+        }
+        else if ((vertices[i].x == w && vertices[next_i].y == h) || (vertices[next_i].x == w && vertices[i].y == h)) {
+            addPoint(Vector2D(w, h));
+        }
+    }
+}
+
+//void Polygon::addCornerPoints(float w, float h) {
+//
+//    for(int i=0; i < n_edges; i++){
+//        int nextIndex = i + 1;
+//        if(nextIndex == n_edges)
+//            nextIndex = 0;
+//
+//        if ((vertices[i].x == 0 && vertices[nextIndex].y == 0) ||
+//            (vertices[nextIndex].x == 0 && vertices[i].y == 0))
+//            addPoint(Vector2D(0,0));
+//
+//        else if ((vertices[i].x == w && vertices[nextIndex].y == 0) ||
+//                 (vertices[nextIndex].x == w && vertices[i].y == 0))
+//            addPoint(Vector2D(w,0));
+//
+//        else if ((vertices[i].x == 0 && vertices[nextIndex].y == h) ||
+//                 (vertices[nextIndex].x == 0 && vertices[i].y == h))
+//            addPoint(Vector2D(0,h));
+//
+//        else if ((vertices[i].x == w && vertices[nextIndex].y == h) ||
+//                 (vertices[nextIndex].x == w && vertices[i].y == h))
+//            addPoint(Vector2D(w,h));
+//
+//    }
+//}
+
 void Polygon::onDraw() {
-    // Draw the interior of the polygon.
-    glColor3ub(255, 255, 0);
+    if (n_edges > 0) {
+        glColor3fv(YELLOW);
 
-    glPushMatrix();
+        glPushMatrix();
 
-    glBegin(GL_POLYGON);
-    for (auto &vertex : vertices) {
-        glVertex2f(vertex.x, vertex.y);
+        glBegin(GL_POLYGON);
+        for (auto &vertex : vertices) {
+            glVertex2f(vertex.x, vertex.y);
+        }
+        glVertex2f(vertices[0].x, vertices[0].y);
+        glEnd();
+
+        // Draw the borders of the polygon.
+        glColor3fv(BLACK);
+
+        glBegin(GL_LINE_LOOP);
+        for (auto vertex : vertices) {
+            glVertex2f(vertex.x, vertex.y);
+        }
+        glVertex2f(vertices[0].x, vertices[0].y);
+        glEnd();
+
+        glPopMatrix();
     }
-    glVertex2f(vertices[0].x, vertices[0].y);
-    glEnd();
+}
 
-    // Draw the borders of the polygon.
-    glColor3b(0, 0, 255);
+void Polygon::onDraw(const float *color) {
+    if (n_edges > 0) {
+        // Draw the interior of the polygon.
+        glColor3fv(color);
+        glPushMatrix();
 
-    glBegin(GL_LINE_LOOP);
-    for (auto vertex : vertices) {
-        glVertex2f(vertex.x, vertex.y);
+        glBegin(GL_POLYGON);
+        for (auto &vertex : vertices) {
+            glVertex2f(vertex.x, vertex.y);
+        }
+        glVertex2f(vertices[0].x, vertices[0].y);
+        glEnd();
+
+        // Draw the borders of the polygon.
+        glColor3fv(BLACK);
+
+        glBegin(GL_LINE_LOOP);
+        for (auto vertex : vertices) {
+            glVertex2f(vertex.x, vertex.y);
+        }
+        glVertex2f(vertices[0].x, vertices[0].y);
+        glEnd();
+
+        glPopMatrix();
     }
-    glVertex2f(vertices[0].x, vertices[0].y);
-    glEnd();
-
-    glPopMatrix();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -389,9 +531,6 @@ void Triangle::updateVertices(Vector2D *ptr1, Vector2D *ptr2, Vector2D *ptr3) {
     ptr[0] = ptr1;
     ptr[1] = ptr2;
     ptr[2] = ptr3;
-//    ptr[0] = new Vector2D(*ptr1);
-//    ptr[1] = new Vector2D(*ptr2);
-//    ptr[2] = new Vector2D(*ptr3);
     isHighlighted = false;
     calculateCircle();
 }
@@ -410,10 +549,6 @@ void Triangle::calculateCircle() {
 
 void Triangle::onMouseMove(const Vector2D &pos) {
     isHighlighted = isInside(pos);
-
-    if (isHighlighted) {
-        std::cout << "is inside a triangle" << std::endl;
-    }
 }
 
 bool Triangle::isOnTheLeft(const Vector2D *P, const Vector2D *P1, const Vector2D *P2) {
@@ -506,47 +641,26 @@ Vector2D* Triangle::getUniquePoint(Triangle *t) {
     }
 }
 
+bool Triangle::containsPoint(const Vector2D *point) const{
+    for(int i=0; i<3; i++) {
+        if(ptr[i]->x == point->x && ptr[i]->y == point->y)
+            return true;
+    }
+    return false;
+}
+
+std::ostream& operator<<(std::ostream &out, const Triangle &triangle) {
+    out << "p1: " << *triangle.ptr[0] << " p2: " << *triangle.ptr[1] << " p3: " << *triangle.ptr[2];
+    return out;
+}
+
+bool Triangle::operator==(const Triangle& s) const {
+    return ptr[0] == s.ptr[0] && ptr[1] == s.ptr[1] && ptr[2] == s.ptr[2];
+}
+
+bool Triangle::operator!=(const Triangle& s) const {
+    return !operator==(s);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//void flip( Triangle *curr,  Triangle *neighbor){
-//    for(int a=0;a<3;a++){
-//        cout<<"BEFORE curr  "<<curr->ptr[a]<<"and neighbor "<<neighbor->ptr[a]<<endl;
-//    }
-//
-//    list<Vector2D *> points;
-//    for(int i=0;i<3;i++){
-//        if(find(points.begin(), points.end(), curr->ptr[i]) != points.end()) {
-//            cout<<"The point is already contained ====>"<<curr->ptr[i] <<endl;
-//        }else{
-//            points.push_back(curr->ptr[i]);
-//        }
-//    }
-//
-//    for(int j=0; j<3; j++){
-//        if(find(points.begin(), points.end(), neighbor->ptr[j]) != points.end()) {
-//            cout<<"The point is already contained ====>"<<neighbor->ptr[j] <<endl;
-//        }else{
-//            points.push_back(neighbor->ptr[j]);
-//        }
-//    }
-//
-//    list<Vector2D *> copyPoints = points;
-//    points.pop_front();
-//    Vector2D *lastPoint = points.back();
-//    copyPoints.pop_back();
-//    copyPoints.pop_back();
-//    copyPoints.push_front(lastPoint);
-//
-//    for(int k=0; k<3;k++){
-//        curr->ptr[k] = points.front();
-//        neighbor->ptr[k] = copyPoints.front();
-//        points.pop_front();
-//        copyPoints.pop_front();
-//    }
-//
-//    for(int a=0;a<3;a++){
-//        cout<<"AFTER curr  "<<curr->ptr[a]<<"and neighbor "<<neighbor->ptr[a]<<endl;
-//    }
-//
-//}
